@@ -1,13 +1,12 @@
 package com.example.lms_backend.Service;
 
-import com.example.lms_backend.Repo.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+import com.example.lms_backend.Model.User;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+import java.util.List;
+import java.util.Optional;
 
+public interface UserService {
+    User createUser(User user);
+    List<User> getAllUsers();
+    Optional<User> findByEmail(String email);
 }
-
