@@ -1,4 +1,4 @@
-package com.example.lms_backend.DTO;
+package com.example.lms_backend.dto;
 
 import lombok.Data;
 
