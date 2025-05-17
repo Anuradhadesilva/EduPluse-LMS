@@ -24,6 +24,13 @@ public class QuizController {
         return new ResponseEntity<>(quizService.createQuiz(quiz), HttpStatus.CREATED);
     }
 
+    @PostMapping("/add/{quizId}")
+    public ResponseEntity<Question> addQuestionToQuiz (@PathVariable Long quizId, @RequestBody Question question){
+        Question createdQuestion = quizService.addQuestionToQuiz(quizId, question);
+        return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
+
+    }
+
     @GetMapping("/{quizId}")
     public ResponseEntity<Quiz> getQuizById(@PathVariable Long quizId){
         return new ResponseEntity<>(quizService.getQuizById(quizId), HttpStatus.OK);

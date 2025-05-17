@@ -28,13 +28,23 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    public Question addQuestionToQuiz(Long quizId, Question question) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(()-> new RuntimeException("Quiz not found with id: " + quizId));
+        question.setQuiz(quiz);
+        return questionRepository.save(question);
+    }
+
+    @Override
     public Quiz getQuizById(Long id) {
         return quizRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Quiz not found with ID: " + id));
+
     }
 
     @Override
     public List<Quiz> getAllQuizzes() {
         return quizRepository.findAll();
     }
+
+
 }
