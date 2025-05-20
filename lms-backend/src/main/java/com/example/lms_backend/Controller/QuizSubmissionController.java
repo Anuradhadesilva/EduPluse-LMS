@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/submission")
@@ -23,5 +23,11 @@ public class QuizSubmissionController {
     public ResponseEntity<QuizSubmissionResponse> submitQuiz(@RequestBody QuizSubmissionRequest request) {
         QuizSubmissionResponse response = quizSubmissionService.submitQuizAnswers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<QuizSubmission>> getQuizSubmissionByUser(@PathVariable Long userId) {
+        List<QuizSubmission> quizSubmissions = quizSubmissionService.getSubmissionsByUserId(userId);
+        return new ResponseEntity<>(quizSubmissions, HttpStatus.OK);
     }
 }
