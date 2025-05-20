@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,9 @@ public class QuizSubmission {
 
     private double score;
 
-    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL)
+    private LocalDateTime submittedAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "quizSubmission", cascade = CascadeType.ALL)
     private List<SubmittedAnswer> answers = new ArrayList<>();
 
 }
