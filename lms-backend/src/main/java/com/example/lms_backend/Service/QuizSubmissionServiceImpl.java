@@ -69,4 +69,9 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
                 feedbackList
         );
     }
+
+    @Override
+    public List<QuizSubmission> getSubmissionsByUserId(Long userId) {
+        return quizSubmissionRepository.findByUserId(userId);
+    }
 }
