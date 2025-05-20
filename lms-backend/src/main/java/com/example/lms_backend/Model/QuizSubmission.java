@@ -31,7 +31,7 @@ public class QuizSubmission {
 
     private LocalDateTime submittedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "quizSubmission", cascade = CascadeType.ALL)
     private List<SubmittedAnswer> answers = new ArrayList<>();
 
 }

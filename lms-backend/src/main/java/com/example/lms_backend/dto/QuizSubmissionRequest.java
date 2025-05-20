@@ -12,5 +12,5 @@ import java.util.List;
 public class QuizSubmissionRequest {
     private Long quizId;
     private Long userId;
-    private List<AnswerDTO> answers;
+    private List<AnswerRequest> answers;
 }

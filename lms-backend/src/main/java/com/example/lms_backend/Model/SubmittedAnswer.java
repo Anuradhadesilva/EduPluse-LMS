@@ -14,10 +14,11 @@ public class SubmittedAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long questionId;
+    @ManyToOne
+    private Question question;
     private String selectedAnswer;
 
     @ManyToOne
     @JoinColumn(name = "submission_id")
-    private QuizSubmission submission;
+    private QuizSubmission quizSubmission;
 }

@@ -1,10 +1,8 @@
 package com.example.lms_backend.Service;
 
-import com.example.lms_backend.Model.QuizSubmission;
-import com.example.lms_backend.dto.AnswerDTO;
-
-import java.util.List;
+import com.example.lms_backend.dto.QuizSubmissionRequest;
+import com.example.lms_backend.dto.QuizSubmissionResponse;
 
 public interface QuizSubmissionService {
-    QuizSubmission submitQuizAnswers(Long quizId, Long userId, List<AnswerDTO> answers);
+    QuizSubmissionResponse submitQuizAnswers(QuizSubmissionRequest request);
 }
