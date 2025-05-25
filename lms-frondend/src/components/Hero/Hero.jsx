@@ -10,7 +10,7 @@ function Hero() {
                     <h2 className='text-6xl md:w-[500px] leading-tight font-bold bg-gradient-to-r from-indigo-500 via-sky-700 via-20% to-purple-700 bg-clip-text text-transparent'>
                         Join Today & Start Learning
                     </h2>
-                    <h3 className='text-sm md:text-lg'>The best place to discover new learning resources, books, and courses</h3>
+                    <h3 className='text-sm md:text-lg font-medium'>The best place to discover new learning resources, books, and courses</h3>
                     <div className='flex flex-row gap-4'>
                         <button className='bg-gradient-to-tr hover:bg-gradient-to-tl from-indigo-500 via-sky-700 via-20% to-purple-700 text-neutral-50cursor-pointer py-2 px-6 rounded-xl text-base font-semibold ease-in-out duration-300 text-white'>Get Started</button>
                         <button className='p-2 px-4 border border-gray-400 text-gray-700 rounded-xl text-base font-semibold ease-in-out duration-300'>Learn More</button>
