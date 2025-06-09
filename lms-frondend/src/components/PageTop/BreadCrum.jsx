@@ -23,6 +23,7 @@ export const BreadCrum = () => {
                     const parentPath = pathnames[index - 1];
                     const isProgramId = !isNaN(name) && parentPath === 'programs';
                     const label = isProgramId ? getTitleFromId(name) : decodeURIComponent(name);
+                    
                     return (
                         <li key={name} className="flex items-center space-x-1">
                             <span className="mx-1">/</span>

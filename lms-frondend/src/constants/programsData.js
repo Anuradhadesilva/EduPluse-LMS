@@ -57,7 +57,7 @@ const programsData = [
         image: "https://cdn.pixabay.com/photo/2016/02/18/19/25/pc-1207886_640.jpg",
         category: "Business",
         rating: "4.5",
-        title: "The best place to discover new learning resources, books, and courses.",
+        title: "The best place to discover new learning resources, books.",
         lessons: "12+ Lessons",
         students: "50+ Students",
         duration: "10hr 30min",
