@@ -4,6 +4,9 @@ import Footer from "./components/footer/Footer"
 import { Home } from "./Pages/Home"
 import { Programs } from "./Pages/Programs"
 import { Details } from "./Pages/Details"
+import { Quiz } from "./Pages/Quiz"
+import { Entrolled } from "./Pages/Entrolled"
+import { Admin } from "./Pages/Admin"
 
 function App() {
   return (
@@ -17,7 +20,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/enrolled" element={<Entrolled />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/programs/:id" element={<Details />} />
+            <Route path="/quiz/:id" element={<Quiz />} />
           </Routes>
           {/* Footer Section */}
           <Footer />

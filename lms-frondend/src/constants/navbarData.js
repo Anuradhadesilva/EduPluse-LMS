@@ -11,8 +11,8 @@ const navItems = [
     },
     {
         id: 3,
-        name: "Resources",
-        path: "/resources",
+        name: "Enrolled",
+        path: "/enrolled",
     },
     {
         id: 4,

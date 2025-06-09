@@ -1,12 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { PageTopBanner } from '../components/PageTop/PageTopBanner'
-import programData from '../constants/programsData'
 import { ProgramCard } from '../components/Programs/ProgramCard'
-import programsData from '../constants/programsData'
+import { AppContext } from '../Contexts/AppContext'
+import { useParams } from 'react-router-dom'
 
 export const Programs = () => {
+    const { id } = useParams();
     const [searchTerm, setSearchTerm] = useState("");
-    const filteredPrograms = programData.filter(program => program.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    const { programs, enrollProgram, enrolled } = useContext(AppContext);
+    const filteredPrograms = programs.filter(program => program.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const isEnrolled = enrolled.includes(Number(id));
+
     return (
         <div className='w-full min-h-screen flex-col space-y-5 pb-16'>
             <PageTopBanner pageTitle={"Programs"} />

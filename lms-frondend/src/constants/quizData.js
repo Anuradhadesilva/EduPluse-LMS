@@ -1,54 +1,74 @@
-const questions = [
+const quizData = [
     {
-        id: 1,
-        question: "What is the full form of HTML?",
-        options: [
-            { text: "Hyper Text Markup Language", isCorrect: true },
-            { text: "High Tech Machine Learning", isCorrect: false },
-            { text: "Hyper Transfer Markup Language", isCorrect: false },
-            { text: "Home Tool Markup Language", isCorrect: false },
-        ],
+        programTitle: "The best place to discover new learning resources, books, and courses.",
+        programId: 0,
+        quizzes: [
+            {
+                id: 1,
+                title: "Java Basics Quiz",
+                questions: [
+                    {
+                        question: "What is JVM?",
+                        optionA: "Java Virtual Machine",
+                        optionB: "Java Volatile Method",
+                        optionC: "Just Very Mad",
+                        optionD: "Java Version Manager",
+                        correctAnswer: "Java Virtual Machine"
+                    },
+                    {
+                        question: "Which keyword is used to inherit a class in Java?",
+                        optionA: "this",
+                        optionB: "super",
+                        optionC: "extends",
+                        optionD: "implements",
+                        correctAnswer: "extends"
+                    },
+                ]
+            },
+            {
+                id: 2,
+                title: "Java OOP Concepts Quiz",
+                questions: [
+                    {
+                        question: "What is Encapsulation in Java?",
+                        optionA: "Wrapping code and data together",
+                        optionB: "Inheriting methods",
+                        optionC: "Hiding implementation",
+                        optionD: "Breaking code into functions",
+                        correctAnswer: "Wrapping code and data together"
+                    },
+                    {
+                        question: "Which keyword is used for inheritance in Java?",
+                        optionA: "super",
+                        optionB: "extends",
+                        optionC: "inherits",
+                        optionD: "this",
+                        correctAnswer: "extends"
+                    },
+                ]
+            }
+        ]
     },
     {
-        id: 2,
-        question: "Which language is used for web development?",
-        options: [
-            { text: "Java", isCorrect: false },
-            { text: "Python", isCorrect: false },
-            { text: "JavaScript", isCorrect: true },
-            { text: "C++", isCorrect: false },
-        ],
-    },
-    {
-        id: 3,
-        question: "What does CSS stand for?",
-        options: [
-            { text: "Cascading Style Sheets", isCorrect: true },
-            { text: "Computer Styling Syntax", isCorrect: false },
-            { text: "Creative Style Sheet", isCorrect: false },
-            { text: "Coding Style System", isCorrect: false },
-        ],
-    },
-    {
-        id: 4,
-        question: "What is the main purpose of React.js?",
-        options: [
-            { text: "Database Management", isCorrect: false },
-            { text: "Building UI Components", isCorrect: true },
-            { text: "Machine Learning", isCorrect: false },
-            { text: "Operating Systems", isCorrect: false },
-        ],
-    },
-    {
-        id: 5,
-        question: "Which of these is a JavaScript framework?",
-        options: [
-            { text: "Django", isCorrect: false },
-            { text: "Laravel", isCorrect: false },
-            { text: "React", isCorrect: true },
-            { text: "Flask", isCorrect: false },
-        ],
-    },
+        programTitle: "The best place to discover new learning resources, books.",
+        programId: 1,
+        quizzes: [
+            {
+                id: 3,
+                title: "React Fundamentals Quiz",
+                questions: [
+                    {
+                        question: "What is JSX?",
+                        optionA: "A JavaScript XML syntax extension",
+                        optionB: "A backend library",
+                        optionC: "A routing tool",
+                        optionD: "A state manager",
+                        correctAnswer: "A JavaScript XML syntax extension"
+                    },
+                ]
+            }
+        ]
+    }
 ];
 
-export default questions;
+export default quizData;
