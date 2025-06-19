@@ -3,6 +3,7 @@ package com.example.lms_backend.Controller;
 import com.example.lms_backend.Model.Question;
 import com.example.lms_backend.Model.Quiz;
 import com.example.lms_backend.Service.QuizService;
+import com.example.lms_backend.dto.QuizRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,9 @@ public class QuizController {
     private QuizService quizService;
 
     @PostMapping("/create")
-    public ResponseEntity<Quiz> createQuiz (@RequestBody Quiz quiz){
-        for(Question question:quiz.getQuestions()){
-            question.setQuiz(quiz);
-        }
-        return new ResponseEntity<>(quizService.createQuiz(quiz), HttpStatus.CREATED);
+    public ResponseEntity<Quiz> createQuiz(@RequestBody QuizRequest quizRequest) {
+        Quiz createdQuiz = quizService.createQuiz(quizRequest);
+        return ResponseEntity.ok(createdQuiz);
     }
 
     @PostMapping("/add/{quizId}")
@@ -34,6 +33,12 @@ public class QuizController {
     @GetMapping("/{quizId}")
     public ResponseEntity<Quiz> getQuizById(@PathVariable Long quizId){
         return new ResponseEntity<>(quizService.getQuizById(quizId), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/program/{programId}")
+    public List<Quiz> getQuizzesByProgram(@PathVariable Long programId) {
+        return quizService.getQuizzesByProgramId(programId);
     }
     @GetMapping
     public List<Quiz> getAllQuizzes() {
