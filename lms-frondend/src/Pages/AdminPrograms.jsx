@@ -1,20 +1,39 @@
-import React, { useContext, useState } from 'react'
-import { AppContext } from '../Contexts/AppContext'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageTopBanner } from '../components/PageTop/PageTopBanner';
+import axios from 'axios';
 
 export const AdminPrograms = () => {
-    const { id } = useParams();
-    const { programs, setPrograms } = useContext(AppContext);
+    // const { id } = useParams();
+    const [programs, setPrograms] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState("");
-    const filteredPrograms = programs.filter(program => program.title.toLowerCase().includes(searchTerm.toLowerCase()));
-    const deleteProgram = (id) => {
-        const confirm = window.confirm('Are you sure you want to delete this program?');
-        if (confirm) {
-            setPrograms(prev => prev.filter(p => p.id !== id));
-        }
-    };
+
+    // const filteredPrograms = programs.filter(program => program.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    // const deleteProgram = (id) => {
+    //     const confirm = window.confirm('Are you sure you want to delete this program?');
+    //     if (confirm) {
+    //         setPrograms(prev => prev.filter(p => p.id !== id));
+    //     }
+    // };
+
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const response = await axios.get('http://localhost:5454/api/program');
+                setPrograms(response.data);
+            } catch (error) {
+                console.error('❌ Failed to fetch programs:', error);
+                alert('Error fetching programs from backend.');
+            }
+        };
+
+        fetchPrograms();
+    }, []);
+
+    const filteredPrograms = programs.filter(program =>
+        program.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className='w-full min-h-screen flex-col space-y-5 pb-16'>

@@ -1,3 +1,69 @@
+// import React, { useEffect, useState } from 'react';
+// import { useParams } from 'react-router-dom';
+// import axios from 'axios';
+// import { PageTopBanner } from '../components/PageTop/PageTopBanner';
+
+// export const AdminProgramDetails = () => {
+//     const { id } = useParams(); // get program id from url
+//     const [program, setProgram] = useState(null); // correct destructuring here
+//     const [error, setError] = useState(null);
+
+//     useEffect(() => {
+//         const fetchProgram = async () => {
+//             try {
+//                 if (!id) {
+//                     throw new Error('Program ID is missing');
+//                 }
+//                 const response = await axios.get(`http://localhost:5454/api/program/${id}`);
+//                 setProgram(response.data);
+//             } catch (err) {
+//                 console.error('Failed to fetch program details', err);
+//                 setError(err.message || 'Unknown error');
+//             }
+//         };
+
+//         fetchProgram();
+//     }, [id]);
+
+//     if (error) return <div className="text-red-600">Error: {error}</div>;
+//     if (!program) return <div>Loading program details...</div>;
+
+//     return (
+//         <div className='w-full min-h-screen flex-col space-y-5 pb-16'>
+//             <PageTopBanner pageTitle="Edit Program" />
+//             <h1 className="text-3xl font-bold mb-4">{program.title}</h1>
+//             <img src={program.image} alt={program.title} className="w-64 mb-4 rounded" />
+//             <p>Category: {program.category}</p>
+//             <p>Rating: {program.rating}</p>
+//             <p>Duration: {program.duration}</p>
+//             <p>Students: {program.students}</p>
+//             <p>Price: {program.price}</p>
+//             <h2 className="text-2xl mt-6 mb-2">Quizzes</h2>
+//             {program.quizzes && program.quizzes.length > 0 ? (
+//                 program.quizzes.map((quiz) => (
+//                     <div key={quiz.id} className="border p-4 rounded mb-4">
+//                         <h3 className="font-semibold">{quiz.title}</h3>
+//                         {quiz.questions.map((q) => (
+//                             <div key={q.id} className="mt-2">
+//                                 <p><strong>Q:</strong> {q.question}</p>
+//                                 <ul className="list-disc ml-6">
+//                                     <li>{q.optionA}</li>
+//                                     <li>{q.optionB}</li>
+//                                     <li>{q.optionC}</li>
+//                                     <li>{q.optionD}</li>
+//                                 </ul>
+//                                 <p><em>Correct Answer: {q.correctAnswer}</em></p>
+//                             </div>
+//                         ))}
+//                     </div>
+//                 ))
+//             ) : (
+//                 <p>No quizzes available</p>
+//             )}
+//         </div>
+//     );
+// };
+
 import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AppContext } from '../Contexts/AppContext';

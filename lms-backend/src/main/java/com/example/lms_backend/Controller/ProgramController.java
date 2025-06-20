@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/program")
-
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProgramController {
 
     @Autowired
