@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,4 +18,7 @@ public class CreateProgramRequest {
     private String students;
     private String duration;
     private String price;
+
+    private List<VideoDTO> videos;
+    private List<DocumentDTO> documents;
 }
