@@ -1,16 +1,31 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PageTopBanner } from '../components/PageTop/PageTopBanner'
 import { ProgramCard } from '../components/Programs/ProgramCard'
-import { AppContext } from '../Contexts/AppContext'
 import { useParams } from 'react-router-dom'
+import axios from 'axios'
 
 export const Programs = () => {
     const { id } = useParams();
     const [searchTerm, setSearchTerm] = useState("");
-    const { programs, enrollProgram, enrolled } = useContext(AppContext);
+    const [programs, setPrograms] = useState([]);
+    // const { programs, enrollProgram, enrolled } = useContext(AppContext);
+
+    useEffect(() => {
+        const fetchProgram = async () => {
+            try {
+                const response = await axios.get('http://localhost:5454/api/program');
+                setPrograms(response.data);
+            } catch (error) {
+                console.error('❌ Failed to fetch programs:', error);
+                alert('Error fetching programs from backend.');
+            }
+        };
+        fetchProgram();
+    }, []);
+
     const filteredPrograms = programs.filter(program => program.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const isEnrolled = enrolled.includes(Number(id));
+    // const isEnrolled = enrolled.includes(Number(id));
 
     return (
         <div className='w-full min-h-screen flex-col space-y-5 pb-16'>
@@ -27,7 +42,7 @@ export const Programs = () => {
                 <div className='w-full grid md:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-6 mt-6'>
                     {filteredPrograms.length > 0 ? (
                         filteredPrograms.map((programs, index) => (
-                            <ProgramCard key={index} image={programs.image} category={programs.category} rating={programs.rating} title={programs.title} lessions={programs.lessons} students={programs.students} duration={programs.duration} price={programs.price} index={index} />
+                            <ProgramCard key={programs.id} id={programs.id} image={programs.image} category={programs.category} rating={programs.rating} title={programs.title} lessions={programs.lessons} students={programs.students} duration={programs.duration} price={programs.price} index={index} />
                         ))
                     ) : (
                         <p className="text-center col-span-full text-gray-500">No programs found.</p>

@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/submission")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class QuizSubmissionController {
     private final QuizSubmissionService quizSubmissionService;

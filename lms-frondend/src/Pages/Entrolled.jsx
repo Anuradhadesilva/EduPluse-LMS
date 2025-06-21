@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { AppContext } from '../Contexts/AppContext'
 
 export const Entrolled = () => {
-    const { enrolled, programs } = useContext(AppContext);
+    const [program, setProgram] = useState([]);
 
     const enrolledPrograms = programs.filter(p => enrolled.includes(p.id));
     return (

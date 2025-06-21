@@ -1,13 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const ProgramCard = ({ image, category, rating, title, lessions, students, duration, price, index }) => {
+export const ProgramCard = ({ image, category, rating, title, lessions, students, duration, price, id }) => {
+
     return (
         <div className="bg-white w-full rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition duration-300 space-y-2">
             <img src={image} alt={title} className="w-full h-48 object-cover" />
             <div className="p-4">
                 <span className="text-sm text-blue-600 font-semibold">{category}</span>
-                <h2 className="text-lg font-bold mt-1 mb-2"> <Link to={`/programs/${index}`}> {title}</Link></h2>
+                <h2 className="text-lg font-bold mt-1 mb-2"> <Link to={`/programs/${id}`}> {title}</Link></h2>
                 <div className="flex items-center text-sm text-gray-500 mb-2">
                     ⭐ {rating} &nbsp; | &nbsp; {students}
                 </div>
