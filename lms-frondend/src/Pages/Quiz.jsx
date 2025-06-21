@@ -1,16 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import quizData from '../constants/quizData';
+import axios from 'axios';
 
 export const Quiz = () => {
     const { id } = useParams();
-    const quizId = parseInt(id); // ✅ Convert to number
+    const [quiz, setQuiz] = useState(null);
+
+    useEffect(() => {
+        const fetchQuiz = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5454/api/quiz/${id}`);
+                setQuiz(response.data);
+            }
+            catch (err) {
+                console.error('❌ Failed to fetch quiz:', err);
+                alert('Error fetching quiz from backend.');
+            }
+        };
+        fetchQuiz();
+
+    }, []);
+    // const quizId = parseInt(id); // ✅ Convert to number
 
 
-    const allQuizzes = quizData.flatMap(program => program.quizzes);
+    // const allQuizzes = quizData.flatMap(program => program.quizzes);
 
     // Find quiz by id
-    const quiz = allQuizzes.find(q => q.id === quizId);
+    // const quiz = allQuizzes.find(q => q.id === quizId);
 
     if (!quiz) {
         return <div className="text-red-600 text-center mt-10">Quiz not found.</div>;

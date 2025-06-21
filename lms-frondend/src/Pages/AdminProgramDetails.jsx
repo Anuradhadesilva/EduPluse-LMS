@@ -52,6 +52,11 @@ export const AdminProgramDetails = () => {
         setFormData(prev => ({ ...prev, documents: updated }));
     };
 
+    const handleAddDocument = () => {
+        const updatedDocuments = [...(formData.documents || []), { title: '', link: '' }];
+        setFormData(prev => ({ ...prev, documents: updatedDocuments }));
+    }
+
     const handleSave = async () => {
         try {
             await axios.put(`http://localhost:5454/api/program/${id}`, formData);
@@ -139,6 +144,12 @@ export const AdminProgramDetails = () => {
                             />
                         </div>
                     ))}
+                    <button
+                        onClick={handleAddDocument}
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    >
+                        ➕ Add Document
+                    </button>
                 </div>
 
                 <button

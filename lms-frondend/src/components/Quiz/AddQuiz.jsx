@@ -1,7 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../Contexts/AppContext';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 export const AddQuiz = ({ programId, programTitle }) => {
+    const { id } = useParams();
     const { quizzes, setQuizzes } = useContext(AppContext);
 
     const [quizTitle, setQuizTitle] = useState('');
@@ -34,35 +37,54 @@ export const AddQuiz = ({ programId, programTitle }) => {
         console.log(currentQ);
     };
 
-    const handleCreateQuiz = () => {
+    const handleCreateQuiz = async () => {
         const newQuiz = {
-            id: Date.now(),
             title: quizTitle,
+            programId: id,
             questions,
         };
 
-        const existing = quizzes.find(q => q.programId === programId);
-        let updated;
-
-        if (existing) {
-            updated = quizzes.map(q =>
-                q.programId === programId
-                    ? { ...q, quizzes: [...q.quizzes, newQuiz] }
-                    : q
+        try {
+            const response = await axios.post(
+                'http://localhost:5454/api/quiz/create',
+                newQuiz
             );
-        } else {
-            updated = [...quizzes, {
-                programTitle,
-                programId,
-                quizzes: [newQuiz]
-            }];
+            alert('✅ Quiz added successfully!');
+            console.log(response.data);
+            setQuizTitle('');
+            setQuestions([]);
+        } catch (err) {
+            console.error('❌ Failed to add quiz:', err);
+            alert('Failed to add quiz. See console for details.');
         }
+        // const newQuiz = {
+        //     id: Date.now(),
+        //     title: quizTitle,
+        //     questions,
+        // };
 
-        setQuizzes(updated);
-        setQuizTitle('');
-        setQuestions([]);
-        alert("Quiz added successfully!");
-        console.log(newQuiz);
+        // const existing = quizzes.find(q => q.programId === programId);
+        // let updated;
+
+        // if (existing) {
+        //     updated = quizzes.map(q =>
+        //         q.programId === programId
+        //             ? { ...q, quizzes: [...q.quizzes, newQuiz] }
+        //             : q
+        //     );
+        // } else {
+        //     updated = [...quizzes, {
+        //         programTitle,
+        //         programId,
+        //         quizzes: [newQuiz]
+        //     }];
+        // }
+
+        // setQuizzes(updated);
+        // setQuizTitle('');
+        // setQuestions([]);
+        // alert("Quiz added successfully!");
+        // console.log(newQuiz);
     };
 
     return (
