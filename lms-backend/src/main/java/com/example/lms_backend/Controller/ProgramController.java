@@ -38,4 +38,10 @@ public class ProgramController {
     public ResponseEntity<Program> getProgramById(@PathVariable Long id) {
         return ResponseEntity.ok(programService.getProgramById(id));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Program> updateProgram(@PathVariable Long id, @RequestBody CreateProgramRequest request) {
+        Program updated = programService.updateProgram(id, request);
+        return ResponseEntity.ok(updated);
+    }
 }

@@ -49,7 +49,7 @@ export const AdminPrograms = () => {
                                 <p>{program.category} | {program.duration}</p>
                             </div>
                             <div className="space-x-2">
-                                <button onClick={() => navigate(`/programs/${index}`)} className="text-blue-600 underline">Edit</button>
+                                <button onClick={() => navigate(`/programs/${program.id}`)} className="text-blue-600 underline">Edit</button>
                                 <button onClick={() => deleteProgram(program.id)} className="text-red-600 underline">Delete</button>
                             </div>
                         </li>

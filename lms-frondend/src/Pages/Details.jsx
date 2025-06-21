@@ -1,27 +1,44 @@
 
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { PageTopBanner } from '../components/PageTop/PageTopBanner'
 import { AppContext } from '../Contexts/AppContext';
+import axios from 'axios';
 
 export const Details = () => {
     const { id } = useParams();
-    const { programs, quizzes, enrollProgram, enrolled } = useContext(AppContext);
-    const program = programs[id];
+    const [program, setProgram] = useState(null);
+    // const { programs, quizzes, enrollProgram, enrolled } = useContext(AppContext);
     const navigate = useNavigate();
 
-    const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || [];
+    // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || [];
+
+    // useEffect(() => {
+    //     window.scrollTo(0, 0)
+    // }, []);
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, []);
+        const fetchProgram = async () => {
+            try {
+                if (!id) {
+                    throw new Error('Program ID is missing');
+                }
+                const response = await axios.get(`http://localhost:5454/api/program/${id}`);
+                setProgram(response.data);
+            } catch (err) {
+                console.error('Failed to fetch program details', err);
+                setError(err.message || 'Unknown error');
+            }
+        };
+        fetchProgram();
+    }, [id]);
 
     if (!program) {
         return <div className="p-10 text-red-600">Program not found.</div>;
     }
 
-    const isEnrolled = enrolled.includes(Number(id));
+    // const isEnrolled = enrolled.includes(Number(id));
 
 
     return (
@@ -45,14 +62,12 @@ export const Details = () => {
                             <span className="mx-2">👨‍🎓 {program.students}</span> |
                             <span className="mx-2">⏱ {program.duration}</span>
                         </div>
-                        {!isEnrolled && (
-                            <button
-                                onClick={() => enrollProgram(Number(id))}
-                                className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                Enroll
-                            </button>
-                        )}
-                        {isEnrolled && <p className="mt-4 text-green-600 font-medium">You are enrolled.</p>}
+                        <button
+                            // onClick={() => enrollProgram(Number(id))}
+                            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                            Enroll
+                        </button>
+
                         <div className="text-xl font-semibold text-blue-600">{program.price}</div>
                         <p className="text-gray-600 leading-relaxed">
                             This program offers in-depth content to help learners achieve mastery in their chosen field. You'll get access to structured video tutorials, resource documents, and quizzes to test your understanding.
@@ -60,6 +75,27 @@ export const Details = () => {
                     </div>
                 </div>
 
+                {program.videos?.length > 0 && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-semibold mb-6">🎥 Video Tutorials</h2>
+                        <div className="space-y-8">
+                            {program.videos.map((video, i) => (
+                                <div key={i} className="flex flex-col gap-2">
+                                    <h3 className="font-semibold text-lg">{video.title}</h3>
+                                    <div className="aspect-w-16 aspect-h-9">
+                                        <iframe
+                                            className="w-full h-64 rounded-lg shadow-md"
+                                            src={video.url.includes("embed") ? video.url : video.url.replace("watch?v=", "embed/").replace("youtu.be/", "www.youtube.com/embed/")}
+                                            title={video.title}
+                                            frameBorder="0"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Documents */}
                 {program.documents?.length > 0 && (
@@ -82,11 +118,11 @@ export const Details = () => {
                     </div>
                 )}
 
-                {programQuizzes.length > 0 && (
+                {program.quizzes?.length > 0 && (
                     <div className="bg-white shadow-md rounded-lg p-6">
                         <h2 className="text-2xl font-semibold mb-4">📝 Related Quizzes</h2>
                         <ul className="space-y-4">
-                            {programQuizzes.map((quiz) => (
+                            {program.quizzes.map((quiz) => (
                                 <li key={quiz.id} className="flex justify-between items-center border-b pb-2">
                                     <span className="font-medium">{quiz.title}</span>
                                     <Link
