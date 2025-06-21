@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoDTO {
+    private Long id;
     private String title;
     private String url;
 }

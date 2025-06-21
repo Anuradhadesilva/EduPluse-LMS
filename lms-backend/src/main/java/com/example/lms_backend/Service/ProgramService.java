@@ -9,4 +9,5 @@ public interface ProgramService {
     Program createProgram(CreateProgramRequest request);
     List<Program> getAllPrograms();
     Program getProgramById(Long id);
+    Program updateProgram(Long id, CreateProgramRequest request);
 }
