@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../Contexts/AppContext';
 import axios, { Axios } from 'axios';
+import { useParams } from 'react-router-dom';
 
 
 export const Admin = () => {
+    const { id } = useParams();
     const { addProgram, addQuizToProgram } = useContext(AppContext);
     const [quiz, setQuiz] = useState({ programTitle: '', title: '', questions: [] });
 
