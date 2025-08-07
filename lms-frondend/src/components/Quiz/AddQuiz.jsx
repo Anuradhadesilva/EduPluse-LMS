@@ -1,12 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../Contexts/AppContext';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 export const AddQuiz = ({ programId, programTitle }) => {
     const { id } = useParams();
-    const { quizzes, setQuizzes } = useContext(AppContext);
-
     const [quizTitle, setQuizTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [currentQ, setCurrentQ] = useState({
@@ -90,7 +88,6 @@ export const AddQuiz = ({ programId, programTitle }) => {
     return (
         <div className="bg-white p-6 rounded shadow mt-6">
             <h2 className="text-xl font-bold mb-4">Create Quiz for: {programTitle}</h2>
-
             <input
                 className="border p-2 mb-4 w-full"
                 placeholder="Enter Quiz Title"

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import quizData from '../constants/quizData';
 import axios from 'axios';
 
 export const Quiz = () => {
     const { id } = useParams();
     const [quiz, setQuiz] = useState(null);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
@@ -34,8 +34,9 @@ export const Quiz = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-4xl w-full p-6 bg-white rounded-lg shadow-md">
+        <div className=" bg-gray-50 pt-[80px] px-4 sm:px-6 md:px-8 flex justify-center pb-[80px]">
+            <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md">
+                <button onClick={() => navigate(-1)} className='mb-4 text-blue-600  underline cursor-pointer'>Back</button>
                 <h1 className="text-2xl font-bold mb-4">{quiz.title}</h1>
 
                 {quiz.questions.map((q, index) => (
