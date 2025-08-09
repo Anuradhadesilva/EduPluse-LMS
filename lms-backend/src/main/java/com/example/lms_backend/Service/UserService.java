@@ -6,6 +6,7 @@ import java.util.Optional;
 public interface UserService {
     public User createUser(User user);
     public List<User> getAllUsers();
+    public List<User> getAllStudents();
     public User findUserByJwtToken(String jwt) throws Exception;
     public User findUserByEmail(String email) throws Exception;
 }

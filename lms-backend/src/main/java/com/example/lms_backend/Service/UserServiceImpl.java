@@ -1,6 +1,7 @@
 package com.example.lms_backend.Service;
 
 import com.example.lms_backend.Config.JwtProvider;
+import com.example.lms_backend.Model.USER_ROLE;
 import com.example.lms_backend.Model.User;
 import com.example.lms_backend.Repo.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> getAllStudents() {
+        return userRepository.findByRole(USER_ROLE.ROLE_STUDENT);
     }
 
     @Override
