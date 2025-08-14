@@ -8,6 +8,7 @@ import { AppContext } from "../../Contexts/AppContext";
 import { Login } from "../Login/Login";
 import { LuMenu } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { Button } from "@mui/material";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ const Navbar = () => {
 
     const [isScrolled, setIsScrolled] = useState(false);
 
-    const { role, setRole } = useContext(AppContext);
+    // const { role, setRole } = useContext(AppContext);
 
     const location = useLocation(); // Get the current location
 
@@ -47,71 +48,76 @@ const Navbar = () => {
 
     return (
         <>
-            {/* Top navbar */}
-            <div
-                id="navbar"
-                className={`w-full h-[8ch] backdrop-blur-sm flex items-center justify-between md:px-4 sm:px-4 px-4 fixed top-0 transition-all ease-in-out duration-300 z-50 ${isScrolled ? "bg-sky-50/50 border-b border-neutral-200" : "bg-transparent"
-                    }`}
-            >
-                {/* left: mobile menu button */}
-                <div className="md:hidden">
-                    <button onClick={toggleNavbar} aria-label="Open menu">
-                        {!isOpen ? <LuMenu size={28} /> : <IoCloseCircleOutline size={28} />}
-                    </button>
-                </div>
+            <nav className="bg-white shadow-md">
+                {/* Top navbar */}
+                <div
+                    id="navbar"
+                    className={`w-full h-[8ch] backdrop-blur-sm flex items-center justify-between md:px-4 sm:px-4 px-4 fixed top-0 transition-all ease-in-out duration-300 z-50 ${isScrolled ? "bg-sky-50/50 border-b border-neutral-200" : "bg-transparent"
+                        }`}
+                >
+                    {/* left: mobile menu button */}
+                    <div className="md:hidden">
+                        <button onClick={toggleNavbar} aria-label="Open menu">
+                            {!isOpen ? <LuMenu size={28} /> : <IoCloseCircleOutline size={28} />}
+                        </button>
+                    </div>
 
-                {/* brand */}
-                <div className="flex items-center gap-2 md:pr-16 pr-0">
-                    <Link to="/" className="text-lg font-semibold text-sky-700 flex items-center gap-x-2">
-                        <FiBookOpen size={24} />
-                        EduPlus
-                    </Link>
-                </div>
-
-                {/* desktop menu + actions */}
-                <div className="hidden md:flex flex-1 items-center justify-between">
-                    <ul className="flex items-center gap-4">
-                        {navItems.map((item) => (
-                            <li key={item.id}>
-                                <Link
-                                    to={item.path}
-                                    className={`hover:text-sky-700 ease-in-out duration-300 ${location.pathname === item.path
-                                        ? "text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-sky-700 to-purple-700 font-semibold"
-                                        : "text-neutral-700"
-                                        }`}
-                                >
-                                    {item.name}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-
-                </div>
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setRole(role === "admin" ? "user" : "admin")}
-                        className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-indigo-500 via-sky-700 to-purple-700"
-                    >
-                        {role === "admin" ? "User" : "Admin"}
-                    </button>
-
-                    {role === "admin" && (
-                        <Link
-                            to="/admin"
-                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                        >
-                            Admin Panel
+                    {/* brand */}
+                    <div className="flex items-center gap-2 md:pr-16 pr-0">
+                        <Link to="/" className="text-lg font-semibold text-sky-700 flex items-center gap-x-2">
+                            <FiBookOpen size={24} />
+                            EduPlus
                         </Link>
-                    )}
+                    </div>
 
-                    <button
-                        onClick={() => setOpenLoginBar(true)}
-                        className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                    >
-                        Sign In
-                    </button>
+                    {/* desktop menu + actions */}
+                    <div className="hidden md:flex flex-1 items-center justify-between">
+                        <ul className="flex items-center gap-4">
+                            {navItems.map((item) => (
+                                <li key={item.id}>
+                                    <Link
+                                        to={item.path}
+                                        className={`hover:text-sky-700 ease-in-out duration-300 ${location.pathname === item.path
+                                            ? "text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-sky-700 to-purple-700 font-semibold"
+                                            : "text-neutral-700"
+                                            }`}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {/* <button
+                            onClick={() => setRole(role === "admin" ? "user" : "admin")}
+                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-indigo-500 via-sky-700 to-purple-700"
+                        >
+                            {role === "admin" ? "User" : "Admin"}
+                        </button> */}
+
+                        {/* {role === "admin" && (
+                            <Link
+                                to="/admin"
+                                className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
+                            >
+                                Admin Panel
+                            </Link>
+                        )} */}
+
+
+                        <button
+                            variant="outlined"
+                            href="#outlined-buttons"
+                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
+                            onClick={() => setOpenLoginBar(true)}
+                        >
+                            Login
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </nav>
 
             {/* Overlay (only on small screens when drawer open) */}
             {isOpen && (
