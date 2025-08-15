@@ -1,12 +1,33 @@
 // components/LoginSidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { IoCloseCircleOutline } from 'react-icons/io5';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../state/Authentication/Action';
+
 
 
 export const Login = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
+    const { isLoading, error } = useSelector(state => state.auth);
+
+    const [loginData, setLoginData] = useState({
+        email: "",
+        password: ""
+    });
+
+    const handleChange = (e) => {
+        setLoginData({
+            ...loginData,
+            [e.target.name]: e.target.value
+        });
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        dispatch(loginUser({ userData: loginData, navigate }));
+    };
     return (
         <>
             {isOpen && (
@@ -31,13 +52,16 @@ export const Login = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    <form className="space-y-4" >
+                    <form className="space-y-4" onSubmit={handleSubmit} >
                         <div>
                             <label className="block mb-1 text-gray-700">Email:</label>
                             <input
                                 type="email"
+                                name="email"
                                 placeholder="Email"
                                 className="w-full p-3 border border-gray-300 "
+                                value={loginData.email}
+                                onChange={handleChange}
                                 required
                             />
                         </div>
@@ -47,6 +71,9 @@ export const Login = ({ isOpen, onClose }) => {
                                 type="password"
                                 placeholder="Password"
                                 className="w-full p-3 border border-gray-300 "
+                                name="password"
+                                value={loginData.password}
+                                onChange={handleChange}
                                 required
                             />
                         </div>

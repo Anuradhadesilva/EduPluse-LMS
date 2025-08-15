@@ -8,7 +8,10 @@ import { AppContext } from "../../Contexts/AppContext";
 import { Login } from "../Login/Login";
 import { LuMenu } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { Button } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../state/Authentication/Action";
+import { blue } from "@mui/material/colors";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,6 +31,12 @@ const Navbar = () => {
     const closeNavbar = () => {
         setIsOpen(false);
     };
+
+    const dispatch = useDispatch();
+    const { auth } = useSelector(store => store)
+    const handleLogout = () => {
+        dispatch(logout());
+    }
 
     // Function to handle scroll event
     const handleScroll = () => {
@@ -115,6 +124,22 @@ const Navbar = () => {
                         >
                             Login
                         </button>
+                        <button
+                            variant="outlined"
+                            href="#outlined-buttons"
+                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
+                            onClick={() => handleLogout()}
+                        >
+                            Logout
+                        </button>
+                        <div className=''>
+                            {auth.user ? (
+                                <Avatar sx={{ bgcolor: 'white', color: blue[500] }}>{auth.user?.fullName[0].toUpperCase()}
+                                </Avatar>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
                     </div>
                 </div>
             </nav>
