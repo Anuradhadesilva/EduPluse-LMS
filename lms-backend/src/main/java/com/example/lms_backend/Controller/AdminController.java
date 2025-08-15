@@ -6,12 +6,10 @@ import com.example.lms_backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -32,5 +30,15 @@ public class AdminController {
     ResponseEntity<?> getAllStudentsByProgram(@PathVariable Long programId) throws Exception {
         List<User> students = enrollmentService.getStudentsByProgram(programId);
         return ResponseEntity.ok(students);
+    }
+
+    @DeleteMapping("/programs/{programId}/students/{studentId}")
+    ResponseEntity<?> removeStudentFromProgram(@PathVariable Long programId, @PathVariable Long studentId) throws Exception {
+        try {
+            String msg = enrollmentService.deleteStudentEnrollment(studentId, programId);
+            return ResponseEntity.ok(Map.of("message", msg));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

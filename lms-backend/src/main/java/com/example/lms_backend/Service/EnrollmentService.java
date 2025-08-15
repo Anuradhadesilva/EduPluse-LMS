@@ -5,6 +5,7 @@ import com.example.lms_backend.Model.Program;
 import com.example.lms_backend.Model.User;
 import com.example.lms_backend.Repo.EnrollmentRepository;
 import com.example.lms_backend.Repo.ProgramRepository;
+import com.example.lms_backend.Repo.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class EnrollmentService {
 
     @Autowired
     private ProgramRepository programRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Enrollment enrollInProgram(String jwt, Long programId) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
@@ -61,5 +64,19 @@ public class EnrollmentService {
         return enrollments.stream()
                 .map(Enrollment::getUser)
                 .collect(Collectors.toList());
+    }
+
+    public String deleteStudentEnrollment(Long studentId, Long programId) throws Exception {
+        userRepository.findById(studentId)
+                .orElseThrow(() -> new Exception("Student not found"));
+        programRepository.findById(programId)
+                .orElseThrow(() -> new Exception("Program not found"));
+
+        boolean enrolled = enrollmentRepository.existsByUserIdAndProgramId(studentId, programId);
+        if (!enrolled) {
+            throw new Exception("Student is not enrolled in this program");
+        }
+        enrollmentRepository.deleteByUserIdAndProgramId(studentId, programId);
+        return "Student removed from program successfully";
     }
 }

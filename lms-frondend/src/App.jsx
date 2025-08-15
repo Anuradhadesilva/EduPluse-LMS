@@ -12,13 +12,21 @@ import { AdminProgramDetails } from "./Pages/AdminProgramDetails"
 import { SignUp } from "./Pages/SignUp"
 import { Login } from "./components/Login/Login"
 import { useDispatch, useSelector } from "react-redux"
-import { store } from "./state/store"
+import { useEffect } from "react"
+import { getUser } from "./state/Authentication/Action"
+
 
 function App() {
-  // const dispatch = useDispatch();
-  // const jwt = localStorage.getItem("jwt");
-  // const { auth } = useSelector((store) => store);
-  const role = useSelector(state => state.auth.role) || localStorage.getItem("role");
+  const dispatch = useDispatch();
+  const jwt = localStorage.getItem("jwt");
+  const { auth } = useSelector((store) => store);
+  const role = localStorage.getItem("role");
+  useEffect(() => {
+    dispatch(getUser(auth.jwt || jwt));
+  }, [auth.jwt]);
+  console.log(auth)
+  console.log(role);
+  // console.log(auth.user?.role)
 
 
 
