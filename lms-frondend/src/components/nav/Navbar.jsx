@@ -8,12 +8,28 @@ import { AppContext } from "../../Contexts/AppContext";
 import { Login } from "../Login/Login";
 import { LuMenu } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Divider, MenuItem } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../state/Authentication/Action";
 import { blue } from "@mui/material/colors";
+import { Popover } from "@mui/material";
+import { Typography } from "@mui/material";
+
 
 const Navbar = () => {
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
     const [isOpen, setIsOpen] = useState(false);
 
     const [openLoginBar, setOpenLoginBar] = useState(false);
@@ -124,22 +140,49 @@ const Navbar = () => {
                         >
                             Login
                         </button>
-                        <button
-                            variant="outlined"
-                            href="#outlined-buttons"
-                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                            onClick={() => handleLogout()}
-                        >
-                            Logout
-                        </button>
+
                         <div className=''>
                             {auth.user ? (
-                                <Avatar sx={{ bgcolor: 'white', color: blue[500] }}>{auth.user?.fullName[0].toUpperCase()}
+                                <Avatar aria-describedby={id} onClick={handleClick} sx={{ bgcolor: 'white', color: blue[500] }}>
+                                    {auth.user?.fullName?.[0]?.toUpperCase() || ""}
                                 </Avatar>
-                            ) : (
-                                <></>
-                            )}
+                            ) : <Avatar aria-describedby={id} onClick={handleClick} sx={{ bgcolor: 'white', color: blue[500] }}>
+
+                            </Avatar>}
+                            <Popover
+                                id={id}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                            >
+                                <Typography sx={{ p: 2 }}>
+                                    <div style={{ padding: "16px", minWidth: "220px" }}>
+                                        {/* Profile Info */}
+                                        <Typography variant="subtitle1" fontWeight="bold">
+                                            {auth.user?.fullName}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {auth.user?.email}
+                                        </Typography>
+
+                                        <Divider sx={{ my: 1 }} />
+
+                                        {/* Menu Items */}
+                                        <MenuItem onClick={() => { navigate("/profile"); handleClose(); }}>
+                                            View Profile
+                                        </MenuItem>
+                                        <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
+                                            Logout
+                                        </MenuItem>
+                                    </div>
+                                </Typography>
+                            </Popover>
                         </div>
+
                     </div>
                 </div>
             </nav>

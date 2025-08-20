@@ -30,7 +30,7 @@ export const loginUser = (reqData) => async (dispatch) => {
         );
         if (data.jwt) localStorage.setItem("jwt", data.jwt);
         if (data.role) localStorage.setItem("role", data.role);
-
+        reqData.navigate("/");
         dispatch({ type: LOGIN_SUCCESS, payload: data.jwt });
         console.log("login success", data);
     } catch (error) {
@@ -47,7 +47,9 @@ export const getUser = (jwt) => async (dispatch) => {
                 Authorization: `Bearer ${jwt}`,
             },
         });
-        dispatch({ type: GET_USER_SUCCESS, payload: data });
+        dispatch({
+            type: GET_USER_SUCCESS, payload: data
+        });
         console.log("user profile", data);
     } catch (error) {
         dispatch({ type: GET_USER_FAILURE, payload: error });

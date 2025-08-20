@@ -17,40 +17,29 @@ export const authReducer = (state = initialState, action) => {
         case REGISTER_REQUEST:
         case LOGIN_REQUEST:
         case GET_USER_REQUEST:
+            return {
+                ...state,
+                isLoading: true,
+                error: null,
+                success: null
+            }
         case REGISTER_SUCCESS:
         case LOGIN_SUCCESS:
             return {
                 ...state,
                 isLoading: false,
                 jwt: action.payload,
-                success: "Register Success"
+                role: localStorage.getItem("role"),      // here payload = jwt // read role back in
+                success: "Auth Success",
             }
+
         case GET_USER_SUCCESS:
             return {
                 ...state,
                 isLoading: false,
-                user: action.payload,
-                success: "Get User  Success",
+                user: action.payload,       // ✅ gets filled
+                success: "Get User Success",
             }
-        // case REGISTER_SUCCESS:
-        // case LOGIN_SUCCESS:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         jwt: action.payload.jwt,
-        //         user: action.payload.user,
-        //         role: action.payload.role
-        //     };
-
-        // case GET_USER_SUCCESS:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         user: action.payload.user,
-        //         jwt: action.payload.jwt,
-        //         role: action.payload.role,
-        //         success: "Get User  Success",
-        //     }
         case REGISTER_FAILURE:
         case LOGIN_FAILURE:
         case GET_USER_FAILURE:
@@ -62,7 +51,9 @@ export const authReducer = (state = initialState, action) => {
             };
 
         case LOGOUT:
-            return initialState;
+            return {
+                ...initialState
+            };
         default:
             return state;
     }
