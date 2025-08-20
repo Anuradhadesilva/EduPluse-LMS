@@ -9,7 +9,10 @@ export const AppProvider = ({ children }) => {
     const [programs, setPrograms] = useState(programsData);
     const [quizzes, setQuizzes] = useState(quizData);
     const [enrolled, setEnrolled] = useState([]);
+    const [openLoginBar, setOpenLoginBar] = useState(false);
 
+    const showLogin = () => setOpenLoginBar(true);
+    const hideLogin = () => setOpenLoginBar(false);
     const enrollProgram = (programId) => {
         const id = Number(programId); // ensure number type
         if (!enrolled.includes(id)) {
@@ -65,7 +68,10 @@ export const AppProvider = ({ children }) => {
                 editProgram,
                 deleteProgram,
                 addQuizToProgram,
-                deleteQuizFromProgram
+                deleteQuizFromProgram,
+                openLoginBar,
+                showLogin,
+                hideLogin
             }}
         >
             {children}

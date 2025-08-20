@@ -99,6 +99,11 @@ export const programReducer = (state = initialState, action) => {
                 isLoading: false,
                 error: action.payload
             };
+        case "CLEAR_ENROLLED":
+            return {
+                ...state,
+                enrolled: []
+            };
         default:
             return state;
     }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const ProgramCard = ({ image, category, rating, title, lessions, students, duration, price, id, onEnroll }) => {
+export const ProgramCard = ({ image, category, rating, title, lessions, students, duration, price, id, onEnroll, isEnrolled }) => {
 
     return (
         <div className="bg-white w-full rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition duration-300 space-y-2">
@@ -18,9 +18,21 @@ export const ProgramCard = ({ image, category, rating, title, lessions, students
                 </ul>
                 <div className="flex justify-between items-center">
                     <span className="text-blue-700 font-semibold">{price}</span>
-                    <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-full hover:bg-blue-700 transition">
-                        Enroll
-                    </button>
+                    {isEnrolled ? (
+                        <button
+                            className="bg-gray-400 text-white text-sm px-3 py-1 rounded-full cursor-not-allowed"
+                            disabled
+                        >
+                            Enrolled
+                        </button>
+                    ) : (
+                        <button
+                            className="bg-blue-600 text-white text-sm px-3 py-1 rounded-full hover:bg-blue-700 transition"
+                            onClick={onEnroll}
+                        >
+                            Enroll
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

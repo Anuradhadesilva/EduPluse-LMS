@@ -4,21 +4,25 @@ import { ProgramCard } from '../components/Programs/ProgramCard'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllPrograms } from '../state/Program/Action'
+import { getAllPrograms, getEnrolledPrograms } from '../state/Program/Action'
 
 export const Programs = () => {
     const dispatch = useDispatch();
-    const { programs, isloading, error } = useSelector((state) => state.program);
+    const { programs, isloading, error, enrolled } = useSelector((state) => state.program);
     const [searchTerm, setSearchTerm] = useState("");
     const jwt = localStorage.getItem("jwt");
     useEffect(() => {
-        dispatch(getAllPrograms()); // ✅ now this works
-    }, [dispatch]);
+        dispatch(getAllPrograms());
+        if (jwt) {
+            dispatch(getEnrolledPrograms(jwt));
+        } else {
+            dispatch({ type: "CLEAR_ENROLLED" });
+        } // ✅ now this works
+    }, [dispatch, jwt]);
 
     const filteredPrograms = programs.filter((program) =>
         program.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     const handleEnroll = (id) => {
         if (!jwt) {
             alert("Please login first!");
@@ -46,22 +50,28 @@ export const Programs = () => {
 
                 <div className="w-full grid md:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
                     {filteredPrograms.length > 0 ? (
-                        filteredPrograms.map((program, index) => (
-                            <ProgramCard
-                                key={program.id}
-                                id={program.id}
-                                image={program.image}
-                                category={program.category}
-                                rating={program.rating}
-                                title={program.title}
-                                lessions={program.lessons}
-                                students={program.students}
-                                duration={program.duration}
-                                price={program.price}
-                                index={index}
-                                onEnroll={handleEnroll(program.id)}
-                            />
-                        ))
+                        filteredPrograms.map((program, index) => {
+                            const isEnrolled = enrolled?.some(
+                                (e) => e.program.id === program.id
+                            );
+                            return (
+                                <ProgramCard
+                                    key={program.id}
+                                    id={program.id}
+                                    image={program.image}
+                                    category={program.category}
+                                    rating={program.rating}
+                                    title={program.title}
+                                    lessions={program.lessons}
+                                    students={program.students}
+                                    duration={program.duration}
+                                    price={program.price}
+                                    index={index}
+                                    isEnrolled={isEnrolled}
+                                    onEnroll={() => handleEnroll(program.id)}
+                                />
+                            )
+                        })
                     ) : (
                         <p className="text-center col-span-full text-gray-500">
                             No programs found.
