@@ -19,6 +19,7 @@ import { Typography } from "@mui/material";
 const Navbar = () => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const { openLoginBar, showLogin, hideLogin } = useContext(AppContext);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -32,7 +33,7 @@ const Navbar = () => {
     const id = open ? 'simple-popover' : undefined;
     const [isOpen, setIsOpen] = useState(false);
 
-    const [openLoginBar, setOpenLoginBar] = useState(false);
+    // const [openLoginBar, setOpenLoginBar] = useState(false);
 
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -136,7 +137,7 @@ const Navbar = () => {
                             variant="outlined"
                             href="#outlined-buttons"
                             className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                            onClick={() => setOpenLoginBar(true)}
+                            onClick={showLogin}
                         >
                             Login
                         </button>
@@ -230,7 +231,7 @@ const Navbar = () => {
             </aside>
 
             {/* Login modal / drawer */}
-            <Login isOpen={openLoginBar} onClose={() => setOpenLoginBar(false)} />
+            <Login isOpen={openLoginBar} onClose={hideLogin} />
         </>
     );
 };

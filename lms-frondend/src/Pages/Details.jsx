@@ -17,6 +17,7 @@ export const Details = () => {
     const dispatch = useDispatch();
 
     const jwt = localStorage.getItem("jwt");
+    const { openLoginBar, showLogin, hideLogin } = useContext(AppContext);
     const { selectedProgram: program, isLoading, error, enrolled } = useSelector((store) => store.program)
 
     // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || []
@@ -26,16 +27,28 @@ export const Details = () => {
         }
         if (jwt) {
             dispatch(getEnrolledPrograms(jwt));
+        } else {
+            // ✅ clear Redux enrolled state when no jwt
+            dispatch({ type: "CLEAR_ENROLLED" });
         }
         window.scrollTo(0, 0);
     }, [dispatch, id, jwt]);
 
     const handleEnroll = () => {
+        if (!jwt) {
+            showLogin();
+            console.log("open login bar");
+            return;
+        }
         console.log("📌 Enrolling with", { jwt, programId: program.id });
         dispatch(enrollProgram(jwt, program.id))
     }
 
     const handleUnenroll = () => {
+        if (!jwt) {
+            showLogin();
+            return;
+        }
         dispatch(unenrollProgram(jwt, program.id))
     }
     const isEnrolled = Array.isArray(enrolled) && enrolled.some(e => e.program.id === program.id);

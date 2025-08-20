@@ -5,12 +5,15 @@ import { Provider } from "react-redux";
 import App from "./App";
 import './index.css'
 import { store } from "./state/store";
+import { AppProvider } from "./Contexts/AppContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <Provider store={store}>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </Provider>
   </BrowserRouter>
 );
