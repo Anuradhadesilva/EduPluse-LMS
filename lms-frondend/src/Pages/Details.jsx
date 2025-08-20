@@ -5,38 +5,56 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { PageTopBanner } from '../components/PageTop/PageTopBanner'
 import { AppContext } from '../Contexts/AppContext';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { enrollProgram, getEnrolledPrograms, getProgramById, unenrollProgram } from '../state/Program/Action';
 
 export const Details = () => {
+
     const { id } = useParams();
-    const [program, setProgram] = useState(null);
+    // const [program, setProgram] = useState(null);
     // const { programs, quizzes, enrollProgram, enrolled } = useContext(AppContext);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || [];
+    const jwt = localStorage.getItem("jwt");
+    const { selectedProgram: program, isLoading, error, enrolled } = useSelector((store) => store.program)
 
-    // useEffect(() => {
-    //     window.scrollTo(0, 0)
-    // }, []);
-
+    // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || []
     useEffect(() => {
-        const fetchProgram = async () => {
-            try {
-                if (!id) {
-                    throw new Error('Program ID is missing');
-                }
-                const response = await axios.get(`http://localhost:5454/api/program/${id}`);
-                setProgram(response.data);
-            } catch (err) {
-                console.error('Failed to fetch program details', err);
-                setError(err.message || 'Unknown error');
-            }
-        };
-        fetchProgram();
-    }, [id]);
+        if (id) {
+            dispatch(getProgramById(id));
+        }
+        if (jwt) {
+            dispatch(getEnrolledPrograms(jwt));
+        }
+        window.scrollTo(0, 0);
+    }, [dispatch, id, jwt]);
+
+    const handleEnroll = () => {
+        console.log("📌 Enrolling with", { jwt, programId: program.id });
+        dispatch(enrollProgram(jwt, program.id))
+    }
+
+    const handleUnenroll = () => {
+        dispatch(unenrollProgram(jwt, program.id))
+    }
+    const isEnrolled = Array.isArray(enrolled) && enrolled.some(e => e.program.id === program.id);
+
+    console.log(isEnrolled)
+    console.log(enrolled);
+
+    // if (isLoading) {
+    //     return <div className="p-10 text-blue-600">Loading program...</div>;
+    // }
+
+    if (error) {
+        return <div className="p-10 text-red-600">Error: {error}</div>;
+    }
 
     if (!program) {
         return <div className="p-10 text-red-600">Program not found.</div>;
     }
+
 
     // const isEnrolled = enrolled.includes(Number(id));
 
@@ -63,9 +81,11 @@ export const Details = () => {
                             <span className="mx-2">⏱ {program.duration}</span>
                         </div>
                         <button
-                            // onClick={() => enrollProgram(Number(id))}
-                            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                            Enroll
+
+                            onClick={isEnrolled ? () => handleUnenroll() : () => handleEnroll()}
+                            className={`mt-4 px-4 py-2 rounded text-white ${isEnrolled ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                                }`}>
+                            {isEnrolled ? "Enrolled" : "Enroll"}
                         </button>
 
                         <div className="text-xl font-semibold text-blue-600">{program.price}</div>

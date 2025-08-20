@@ -12,7 +12,7 @@ import { AdminProgramDetails } from "./Pages/AdminProgramDetails"
 import { SignUp } from "./Pages/SignUp"
 import { Login } from "./components/Login/Login"
 import { useDispatch, useSelector } from "react-redux"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { getUser } from "./state/Authentication/Action"
 
 
@@ -20,13 +20,23 @@ function App() {
   const dispatch = useDispatch();
   const jwt = localStorage.getItem("jwt");
   const { auth } = useSelector((store) => store);
-  const role = localStorage.getItem("role");
+  const role = auth.role || localStorage.getItem("role");
   useEffect(() => {
     dispatch(getUser(auth.jwt || jwt));
   }, [auth.jwt]);
   console.log(auth)
-  console.log(role);
-  // console.log(auth.user?.role)
+  // useEffect(() => {
+  //   if (!auth.user) {
+  //     fetchedRef.current = false; // reset after logout
+  //   }
+  // }, [auth.jwt]);
+  // useEffect(() => {
+  //   const token = auth.jwt || localStorage.getItem("jwt");
+  //   if (token && !fetchedRef.current) {
+  //     dispatch(getUser(token));
+  //     fetchedRef.current = true; // ✅ only once
+  //   }
+  // }, [auth.jwt, dispatch]);
 
 
 
