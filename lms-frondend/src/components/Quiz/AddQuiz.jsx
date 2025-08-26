@@ -2,9 +2,14 @@ import React, { useState, useContext } from 'react';
 import { AppContext } from '../../Contexts/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { createQuiz } from '../../state/Quiz/Action';
+import quizData from '../../constants/quizData';
+import { getProgramById } from '../../state/Program/Action';
 
 export const AddQuiz = ({ programId, programTitle }) => {
-    const { id } = useParams();
+    const disptach = useDispatch();
+    const jwt = localStorage.getItem("jwt");
     const [quizTitle, setQuizTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [currentQ, setCurrentQ] = useState({
@@ -38,19 +43,16 @@ export const AddQuiz = ({ programId, programTitle }) => {
     const handleCreateQuiz = async () => {
         const newQuiz = {
             title: quizTitle,
-            programId: id,
+            programId: programId,
             questions,
         };
 
         try {
-            const response = await axios.post(
-                'http://localhost:5454/api/quiz/create',
-                newQuiz
-            );
-            alert('✅ Quiz added successfully!');
-            console.log(response.data);
+            await disptach(createQuiz(jwt, newQuiz));
+            await disptach(getProgramById(programId));
             setQuizTitle('');
             setQuestions([]);
+            console.log(programId);
         } catch (err) {
             console.error('❌ Failed to add quiz:', err);
             alert('Failed to add quiz. See console for details.');
@@ -93,31 +95,56 @@ export const AddQuiz = ({ programId, programTitle }) => {
                 placeholder="Enter Quiz Title"
                 value={quizTitle}
                 onChange={e => setQuizTitle(e.target.value)}
+                required
             />
 
             <div className="grid grid-cols-2 gap-3 mb-4">
-                <input className="border p-2" placeholder="Question" value={currentQ.question}
-                    onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })} />
-                <input className="border p-2" placeholder="Correct Answer"
+                <input
+                    className="border p-2"
+                    placeholder="Question"
+                    value={currentQ.question}
+                    onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })}
+                    required
+                />
+                <input
+                    className="border p-2"
+                    placeholder="Correct Answer"
                     value={currentQ.correctAnswer}
-                    onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })} />
-                <input className="border p-2" placeholder="Option A"
+                    onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })}
+                    required
+                />
+                <input
+                    className="border p-2"
+                    placeholder="Option A"
                     value={currentQ.optionA}
-                    onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })} />
-                <input className="border p-2" placeholder="Option B"
+                    onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })}
+                    required
+                />
+                <input
+                    className="border p-2"
+                    placeholder="Option B"
                     value={currentQ.optionB}
-                    onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })} />
-                <input className="border p-2" placeholder="Option C"
+                    onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })}
+                    required
+                />
+                <input
+                    className="border p-2"
+                    placeholder="Option C"
                     value={currentQ.optionC}
-                    onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })} />
-                <input className="border p-2" placeholder="Option D"
+                    onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })} required
+                />
+                <input
+                    className="border p-2"
+                    placeholder="Option D"
                     value={currentQ.optionD}
-                    onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })} />
+                    onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })}
+                    required
+                />
             </div>
 
             <button
                 className="bg-green-600 text-white px-4 py-2 rounded"
-                onClick={handleAddQuestion}
+                onClick={() => handleAddQuestion()}
             >
                 ➕ Add Question
             </button>
@@ -154,7 +181,7 @@ export const AddQuiz = ({ programId, programTitle }) => {
 
                     <button
                         className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
-                        onClick={handleCreateQuiz}
+                        onClick={() => handleCreateQuiz()}
                     >
                         ✅ Save Quiz
                     </button>
