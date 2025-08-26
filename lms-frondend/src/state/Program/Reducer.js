@@ -53,6 +53,7 @@ export const programReducer = (state = initialState, action) => {
                 programs: state.programs.map((p) =>
                     p.id === action.payload.id ? action.payload : p
                 ),
+                selectedProgram: action.payload,
             };
         case DELETE_PROGRAM_SUCCESS:
             return {

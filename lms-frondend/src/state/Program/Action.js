@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ENROLL_PROGRAM_FAILURE, ENROLL_PROGRAM_REQUEST, ENROLL_PROGRAM_SUCCESS, GET_ENROLLED_PROGRAMS_FAILURE, GET_ENROLLED_PROGRAMS_REQUEST, GET_ENROLLED_PROGRAMS_SUCCESS, GET_PROGRAM_FAILURE, GET_PROGRAM_REQUEST, GET_PROGRAM_SUCCESS, GET_PROGRAMS_FAILURE, GET_PROGRAMS_REQUEST, GET_PROGRAMS_SUCCESS, UNENROLL_PROGRAM_FAILURE, UNENROLL_PROGRAM_REQUEST, UNENROLL_PROGRAM_SUCCESS } from "./ActionType"
+import { CREATE_PROGRAM_FAILURE, CREATE_PROGRAM_REQUEST, CREATE_PROGRAM_SUCCESS, DELETE_PROGRAM_FAILURE, DELETE_PROGRAM_REQUEST, DELETE_PROGRAM_SUCCESS, ENROLL_PROGRAM_FAILURE, ENROLL_PROGRAM_REQUEST, ENROLL_PROGRAM_SUCCESS, GET_ENROLLED_PROGRAMS_FAILURE, GET_ENROLLED_PROGRAMS_REQUEST, GET_ENROLLED_PROGRAMS_SUCCESS, GET_PROGRAM_FAILURE, GET_PROGRAM_REQUEST, GET_PROGRAM_SUCCESS, GET_PROGRAMS_FAILURE, GET_PROGRAMS_REQUEST, GET_PROGRAMS_SUCCESS, GET_STUDENTS_BY_PROGRAM_FAILURE, GET_STUDENTS_BY_PROGRAM_REQUEST, GET_STUDENTS_BY_PROGRAM_SUCCESS, UNENROLL_PROGRAM_FAILURE, UNENROLL_PROGRAM_REQUEST, UNENROLL_PROGRAM_SUCCESS, UPDATE_PROGRAM_FAILURE, UPDATE_PROGRAM_REQUEST, UPDATE_PROGRAM_SUCCESS } from "./ActionType"
 import { api, API_URL } from "../../config/api";
 
 export const getAllPrograms = () => async (dispatch) => {
@@ -90,9 +90,9 @@ export const getEnrolledPrograms = (jwt) => async (dispatch) => {
 
 // 🔹 Create program
 export const createProgram = (jwt, programData) => async (dispatch) => {
+    dispatch({ type: CREATE_PROGRAM_REQUEST });
     try {
-        dispatch({ type: CREATE_PROGRAM_REQUEST });
-        const { data } = await axios.post(`${API}`, programData, {
+        const { data } = await api.post(`/api/program`, programData, {
             headers: { Authorization: `Bearer ${jwt}` },
         });
         console.log("✅ Program created:", data);
@@ -105,9 +105,9 @@ export const createProgram = (jwt, programData) => async (dispatch) => {
 
 // 🔹 Update program
 export const updateProgram = (jwt, id, programData) => async (dispatch) => {
+    dispatch({ type: UPDATE_PROGRAM_REQUEST });
     try {
-        dispatch({ type: UPDATE_PROGRAM_REQUEST });
-        const { data } = await axios.put(`${API}/${id}`, programData, {
+        const { data } = await api.put(`/api/program/${id}`, programData, {
             headers: { Authorization: `Bearer ${jwt}` },
         });
         console.log("✅ Program updated:", data);
@@ -120,9 +120,9 @@ export const updateProgram = (jwt, id, programData) => async (dispatch) => {
 
 // 🔹 Delete program
 export const deleteProgram = (jwt, id) => async (dispatch) => {
+    dispatch({ type: DELETE_PROGRAM_REQUEST });
     try {
-        dispatch({ type: DELETE_PROGRAM_REQUEST });
-        await axios.delete(`${API}/${id}`, {
+        await api.delete(`/api/program/${id}`, {
             headers: { Authorization: `Bearer ${jwt}` },
         });
         console.log("✅ Program deleted:", id);
@@ -135,9 +135,9 @@ export const deleteProgram = (jwt, id) => async (dispatch) => {
 
 // 🔹 Get students enrolled in a program
 export const getStudentsByProgram = (jwt, programId) => async (dispatch) => {
+    dispatch({ type: GET_STUDENTS_BY_PROGRAM_REQUEST });
     try {
-        dispatch({ type: GET_STUDENTS_BY_PROGRAM_REQUEST });
-        const { data } = await axios.get(`${API}/${programId}/students`, {
+        const { data } = await api.get(`/api/program//${programId}/students`, {
             headers: { Authorization: `Bearer ${jwt}` },
         });
         console.log("✅ Students fetched for program:", data);

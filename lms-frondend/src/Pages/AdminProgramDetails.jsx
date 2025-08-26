@@ -3,30 +3,31 @@ import { useParams } from 'react-router-dom';
 import { PageTopBanner } from '../components/PageTop/PageTopBanner';
 import { AddQuiz } from '../components/Quiz/AddQuiz';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProgramById, updateProgram } from '../state/Program/Action';
 
 export const AdminProgramDetails = () => {
     const { id } = useParams();
-    const [program, setProgram] = useState(null);
     const [formData, setFormData] = useState(null);
     const [error, setError] = useState('');
-    const [quizTitle, setQuizTitle] = useState('');
+
     const [showQuizForm, setShowQuizForm] = useState(false);
-
+    const dispatch = useDispatch();
+    const jwt = localStorage.getItem("jwt");
+    const { selectedProgram: program } = useSelector((store) => store.program)
     useEffect(() => {
-        const fetchProgram = async () => {
-            try {
-                if (!id) throw new Error('Program ID is missing');
-                const res = await axios.get(`http://localhost:5454/api/program/${id}`);
-                setProgram(res.data);
-                setFormData(res.data); // Initialize form data
-            } catch (err) {
-                console.error('Failed to fetch program details', err);
-                setError(err.message || 'Unknown error');
-            }
-        };
+        if (id) {
+            dispatch(getProgramById(id));
+        }
 
-        fetchProgram();
-    }, [id]);
+        window.scrollTo(0, 0);
+    }, [dispatch, id]);
+    useEffect(() => {
+        if (program) {
+            setFormData(program);
+        }
+    }, [program]);
+    console.log(program)
 
     if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
     if (!program || !formData) return <div className="p-6 text-gray-600">Loading...</div>;
@@ -42,9 +43,22 @@ export const AdminProgramDetails = () => {
     };
 
     const handleAddVideo = () => {
+        if (!formData.videos) formData.videos = [];
+
+        console.log(formData.videos)
+
+        const last = formData.videos[formData.videos.length - 1];
+        if (last && (!last.title || !last.url)) {
+            alert("Please fill the last video before adding a new one.");
+            return;
+        }
         const updatedVideos = [...(formData.videos || []), { title: '', url: '' }];
         setFormData(prev => ({ ...prev, videos: updatedVideos }));
     };
+    const handleRemoveVideo = (index) => {
+        const updated = formData.videos.filter((_, i) => i !== index);
+        setFormData(prev => ({ ...prev, videos: updated }))
+    }
 
     const handleDocumentChange = (index, field, value) => {
         const updated = [...formData.documents];
@@ -56,11 +70,17 @@ export const AdminProgramDetails = () => {
         const updatedDocuments = [...(formData.documents || []), { title: '', link: '' }];
         setFormData(prev => ({ ...prev, documents: updatedDocuments }));
     }
+    const handleDocumentDelete = (index) => {
+        const updated = formData.documents.filter((_, i) => i !== index);
+        setFormData(prev => ({ ...prev, documents: updated }));
+
+    }
 
     const handleSave = async () => {
         try {
-            await axios.put(`http://localhost:5454/api/program/${id}`, formData);
-            alert('Program updated successfully!');
+            if (id) {
+                dispatch(updateProgram(jwt, id, formData));
+            }
         } catch (err) {
             alert('Failed to save program: ' + err.message);
         }
@@ -115,6 +135,7 @@ export const AdminProgramDetails = () => {
                                 placeholder="Video URL"
                                 className="border p-2"
                             />
+                            <button onClick={() => handleRemoveVideo(index)} className="bg-red-500 text-white px-3 py-1 rounded">Remove</button>
                         </div>
                     ))}
                     <button
@@ -142,6 +163,11 @@ export const AdminProgramDetails = () => {
                                 placeholder="Document Link"
                                 className="border p-2"
                             />
+                            <button
+                                onClick={() => handleDocumentDelete(index)}
+                                className="bg-red-500 text-white px-3 py-1 rounded">
+                                Remove
+                            </button>
                         </div>
                     ))}
                     <button
@@ -163,7 +189,7 @@ export const AdminProgramDetails = () => {
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold">Quizzes</h2>
                     <ul className="mt-2 space-y-2">
-                        {(formData.quizzes || []).map(quiz => (
+                        {(program.quizzes || []).map(quiz => (
                             <li
                                 key={quiz.id}
                                 className="border p-3 rounded flex justify-between items-center"
