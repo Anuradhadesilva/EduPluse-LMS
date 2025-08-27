@@ -32,6 +32,7 @@ public class QuizSubmission {
 
     private LocalDateTime submittedAt = LocalDateTime.now();
 
+
     @OneToMany(mappedBy = "quizSubmission", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<SubmittedAnswer> answers = new ArrayList<>();

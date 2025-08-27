@@ -1,5 +1,5 @@
 import { api } from "../../config/api";
-import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS } from "./ActionType"
+import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, DELETE_QUIZ_FAILURE, DELETE_QUIZ_REQUEST, DELETE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS } from "./ActionType"
 
 export const createQuiz = (jwt, quizData) => async (dispatch) => {
     dispatch({ type: CREATE_QUIZ_REQUEST });
@@ -38,6 +38,21 @@ export const getQuizById = (quizId) => async (dispatch) => {
     } catch (err) {
         dispatch({ type: GET_QUIZ_BY_ID_FAILURE, payload: err.message });
         console.log("Error from get quiz", data);
+    }
+};
+
+
+export const deleteQuiz = (jwt, id) => async (dispatch) => {
+    dispatch({ type: DELETE_QUIZ_REQUEST });
+    try {
+        await api.delete(`/api/quiz/${id}`, {
+            headers: { Authorization: `Bearer ${jwt}` },
+        });
+        console.log("✅ Quiz deleted:", id);
+        dispatch({ type: DELETE_QUIZ_SUCCESS, payload: id });
+    } catch (err) {
+        console.error("❌ Error deleting Quiz:", err.message);
+        dispatch({ type: DELETE_QUIZ_FAILURE, payload: err.message });
     }
 };
 

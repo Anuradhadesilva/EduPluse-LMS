@@ -35,6 +35,12 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    public void deleteQuiz(Long quizId) {
+        Quiz quiz = getQuizById(quizId);
+        quizRepository.delete(quiz);
+    }
+
+    @Override
     public Quiz createQuiz(QuizRequest quizRequest) {
         Program program = programRepository.findById(quizRequest.getProgramId())
                 .orElseThrow(() -> new RuntimeException("Program not found"));

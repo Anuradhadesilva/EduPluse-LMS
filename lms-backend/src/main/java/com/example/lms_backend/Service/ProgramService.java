@@ -10,4 +10,5 @@ public interface ProgramService {
     List<Program> getAllPrograms();
     Program getProgramById(Long id);
     Program updateProgram(Long id, CreateProgramRequest request);
+    void deleteProgram(Long id);
 }

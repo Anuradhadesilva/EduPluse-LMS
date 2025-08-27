@@ -17,6 +17,9 @@ import {
     GET_SUBMISSIONS_BY_USER_REQUEST,
     GET_SUBMISSIONS_BY_USER_SUCCESS,
     GET_SUBMISSIONS_BY_USER_FAILURE,
+    DELETE_QUIZ_REQUEST,
+    DELETE_QUIZ_SUCCESS,
+    DELETE_QUIZ_FAILURE,
 } from "./ActionType";
 
 const initialState = {
@@ -35,6 +38,7 @@ export const quizReducer = (state = initialState, action) => {
         case ADD_QUESTION_REQUEST:
         case GET_QUIZ_BY_ID_REQUEST:
         case GET_QUIZZES_BY_PROGRAM_REQUEST:
+        case DELETE_QUIZ_REQUEST:
         case SUBMIT_QUIZ_REQUEST:
         case GET_SUBMISSIONS_BY_USER_REQUEST:
             return {
@@ -75,6 +79,12 @@ export const quizReducer = (state = initialState, action) => {
                 quizzes: action.payload
             };
 
+        case DELETE_QUIZ_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                quizzes: state.quizzes.filter((p) => p.id !== action.payload),
+            }
         case SUBMIT_QUIZ_SUCCESS:
             return {
                 ...state,
@@ -95,6 +105,7 @@ export const quizReducer = (state = initialState, action) => {
         case GET_QUIZZES_BY_PROGRAM_FAILURE:
         case SUBMIT_QUIZ_FAILURE:
         case GET_SUBMISSIONS_BY_USER_FAILURE:
+        case DELETE_QUIZ_FAILURE:
             return { ...state, isLoading: false, error: action.payload };
 
         default:

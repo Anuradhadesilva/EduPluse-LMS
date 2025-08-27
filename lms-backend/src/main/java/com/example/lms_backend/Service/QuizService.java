@@ -14,4 +14,5 @@ public interface QuizService {
     List<Quiz> getAllQuizzes();
     List<Quiz> getQuizzesByProgramId(Long programId);
     Question addQuestionToQuiz(Long quizId,Question question);
+    void deleteQuiz(Long quizId);
 }

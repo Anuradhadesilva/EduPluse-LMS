@@ -45,4 +45,10 @@ public class QuizController {
     public List<Quiz> getAllQuizzes() {
         return quizService.getAllQuizzes();
     }
+
+    @DeleteMapping("/{quizId}")
+    public ResponseEntity<Void> deleteQuiz(@PathVariable Long quizId) {
+        quizService.deleteQuiz(quizId);
+        return ResponseEntity.noContent().build();
+    }
 }

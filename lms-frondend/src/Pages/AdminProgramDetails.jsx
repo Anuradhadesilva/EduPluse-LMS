@@ -5,6 +5,7 @@ import { AddQuiz } from '../components/Quiz/AddQuiz';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProgramById, updateProgram } from '../state/Program/Action';
+import { deleteQuiz } from '../state/Quiz/Action';
 
 export const AdminProgramDetails = () => {
     const { id } = useParams();
@@ -22,6 +23,7 @@ export const AdminProgramDetails = () => {
 
         window.scrollTo(0, 0);
     }, [dispatch, id]);
+
     useEffect(() => {
         if (program) {
             setFormData(program);
@@ -76,6 +78,24 @@ export const AdminProgramDetails = () => {
 
     }
 
+    const handleDeleteQuiz = async (id) => {
+        if (!jwt) {
+            showLogin();
+            console.log("open login bar");
+            return;
+        } else {
+            try {
+                await dispatch(deleteQuiz(jwt, id));
+                await dispatch(getProgramById(program.id));
+            } catch (err) {
+                console.error('❌ Failed to add quiz:', err);
+                alert('Failed to add quiz. See console for details.');
+            }
+            console.log(id);
+        }
+    }
+
+
     const handleSave = async () => {
         try {
             if (id) {
@@ -86,15 +106,6 @@ export const AdminProgramDetails = () => {
         }
     };
 
-    const handleDeleteQuiz = async (quizId) => {
-        try {
-            await axios.delete(`http://localhost:5454/api/quiz/${quizId}`);
-            const updatedQuizzes = formData.quizzes.filter(q => q.id !== quizId);
-            setFormData(prev => ({ ...prev, quizzes: updatedQuizzes }));
-        } catch (err) {
-            alert('Failed to delete quiz: ' + err.message);
-        }
-    };
 
     return (
         <div className='w-full min-h-screen flex-col space-y-5 pb-16'>

@@ -45,4 +45,10 @@ public class ProgramController {
         Program updated = programService.updateProgram(id, request);
         return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Program> deleteProgram(@PathVariable Long id) {
+        programService.deleteProgram(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,12 +1,12 @@
 package com.example.lms_backend.Service;
 
-import com.example.lms_backend.Model.Document;
-import com.example.lms_backend.Model.Program;
-import com.example.lms_backend.Model.Video;
+import com.example.lms_backend.Model.*;
 import com.example.lms_backend.Repo.ProgramRepository;
+import com.example.lms_backend.Repo.SubmittedAnswerRepository;
 import com.example.lms_backend.dto.CreateProgramRequest;
 import com.example.lms_backend.dto.DocumentDTO;
 import com.example.lms_backend.dto.VideoDTO;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,10 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Autowired
     private ProgramRepository programRepository;
+
+    @Autowired
+    private final SubmittedAnswerRepository submittedAnswerRepository;
+
 
     @Override
     public Program createProgram(CreateProgramRequest request) {
@@ -42,12 +46,25 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
+    @Transactional
+    public void deleteProgram(Long id) {
+        Program program = getProgramById(id);
+        for (Quiz quiz : program.getQuizzes()) {
+            for(Question question : quiz.getQuestions()) {
+                submittedAnswerRepository.deleteByQuestion(question);
+            }
+        }
+        programRepository.delete(program);
+    }
+
+    @Override
     public Program updateProgram(Long id, CreateProgramRequest request) {
         Program program = getProgramById(id);
 
         updateProgramFromRequest(program, request);
         return programRepository.save(program);
     }
+
 
     // 🔧 Extracted helper to populate program from DTO
     private void updateProgramFromRequest(Program program, CreateProgramRequest request) {
