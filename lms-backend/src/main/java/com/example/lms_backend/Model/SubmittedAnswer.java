@@ -19,6 +19,7 @@ public class SubmittedAnswer {
 
     @ManyToOne
     private Question question;
+
     private String selectedAnswer;
 
     @ManyToOne

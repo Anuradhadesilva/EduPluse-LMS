@@ -25,4 +25,6 @@ public class Question {
     @JoinColumn(name = "quiz_id")
     @JsonBackReference
     private Quiz quiz;
+
+
 }
