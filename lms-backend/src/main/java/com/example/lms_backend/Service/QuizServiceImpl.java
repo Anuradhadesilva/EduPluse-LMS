@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,23 +47,9 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new RuntimeException("Program not found"));
 
         Quiz quiz = new Quiz();
-        quiz.setTitle(quizRequest.getTitle());
         quiz.setProgram(program);
+        updateQuizFromRequest(quiz, quizRequest);
 
-        List<Question> questions = new ArrayList<>();
-        for (QuizRequest.QuestionRequest q : quizRequest.getQuestions()) {
-            Question question = new Question();
-            question.setQuestion(q.getQuestion());
-            question.setOptionA(q.getOptionA());
-            question.setOptionB(q.getOptionB());
-            question.setOptionC(q.getOptionC());
-            question.setOptionD(q.getOptionD());
-            question.setCorrectAnswer(q.getCorrectAnswer());
-            question.setQuiz(quiz);
-            questions.add(question);
-        }
-
-        quiz.setQuestions(questions);
         return quizRepository.save(quiz);
     }
 
@@ -74,6 +61,7 @@ public class QuizServiceImpl implements QuizService {
     }
 
 
+
     @Override
     public List<Quiz> getAllQuizzes() {
         return quizRepository.findAll();
@@ -82,5 +70,57 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public List<Quiz> getQuizzesByProgramId(Long programId) {
         return quizRepository.findByProgramId(programId);
+    }
+
+    @Override
+    public Quiz updateQuiz(Long id, QuizRequest request) {
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        updateQuizFromRequest(quiz, request);
+        return quizRepository.save(quiz);
+    }
+
+    private void updateQuizFromRequest(Quiz quiz, QuizRequest request) {
+        quiz.setTitle(request.getTitle());
+
+        // Keep track of existing questions
+        Map<Long, Question> existingQuestions = quiz.getQuestions().stream()
+                .filter(q -> q.getId() != null)
+                .collect(Collectors.toMap(Question::getId, q -> q));
+
+        List<Question> updatedQuestions = new ArrayList<>();
+
+        if (request.getQuestions() != null) {
+            for (QuizRequest.QuestionRequest dto : request.getQuestions()) {
+                if (dto.getQuestion() == null || dto.getQuestion().isBlank()) continue;
+
+                if (dto.getId() != null && existingQuestions.containsKey(dto.getId())) {
+                    Question existing = existingQuestions.get(dto.getId());
+                    existing.setQuestion(dto.getQuestion());
+                    existing.setOptionA(dto.getOptionA());
+                    existing.setOptionB(dto.getOptionB());
+                    existing.setOptionC(dto.getOptionC());
+                    existing.setOptionD(dto.getOptionD());
+                    existing.setCorrectAnswer(dto.getCorrectAnswer());
+                    updatedQuestions.add(existing);
+                } else {
+                    // ➕ New question
+                    Question newQ = new Question();
+                    newQ.setQuestion(dto.getQuestion());
+                    newQ.setOptionA(dto.getOptionA());
+                    newQ.setOptionB(dto.getOptionB());
+                    newQ.setOptionC(dto.getOptionC());
+                    newQ.setOptionD(dto.getOptionD());
+                    newQ.setCorrectAnswer(dto.getCorrectAnswer());
+                    newQ.setQuiz(quiz);
+                    updatedQuestions.add(newQ);
+                }
+            }
+        }
+
+        // 🧹 Clear & replace (orphanRemoval = true will delete old)
+        quiz.getQuestions().clear();
+        quiz.getQuestions().addAll(updatedQuestions);
     }
 }

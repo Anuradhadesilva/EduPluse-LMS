@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Navbar from "./components/nav/Navbar"
 import Footer from "./components/footer/Footer"
 import { Home } from "./Pages/Home"
@@ -50,7 +50,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/programs" element={role === 'ROLE_ADMIN' ? <AdminPrograms /> : <Programs />} />
-          <Route path="/enrolled" element={<Entrolled />} />
+          <Route path="/enrolled" element={role === 'ROLE_STUDENT' ? <Entrolled /> : <Navigate to="/" />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/programs/:id" element={role === 'ROLE_ADMIN' ? <AdminProgramDetails /> : <Details />} />
           <Route path="/quiz/:id" element={<Quiz />} />

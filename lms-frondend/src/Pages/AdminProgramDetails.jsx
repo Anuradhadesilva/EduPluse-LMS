@@ -206,12 +206,19 @@ export const AdminProgramDetails = () => {
                                 className="border p-3 rounded flex justify-between items-center"
                             >
                                 <span>{quiz.title}</span>
-                                <button
-                                    onClick={() => handleDeleteQuiz(quiz.id)}
-                                    className="text-red-600 hover:underline"
-                                >
-                                    Delete
-                                </button>
+                                <div className='space-x-4'>
+                                    <button
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteQuiz(quiz.id)}
+                                        className="text-red-600 hover:underline"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </li>
                         ))}
                     </ul>

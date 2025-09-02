@@ -28,7 +28,7 @@ export const Programs = () => {
             alert("Please login first!");
             return;
         }
-        // dispatch(enrollProgram(jwt, id));
+        dispatch(enrollProgram(jwt, id));
     };
 
     return (

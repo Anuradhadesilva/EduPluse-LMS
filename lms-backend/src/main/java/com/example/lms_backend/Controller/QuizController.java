@@ -24,6 +24,14 @@ public class QuizController {
         return ResponseEntity.ok(createdQuiz);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Quiz> updateQuiz(
+            @PathVariable Long id,
+            @RequestBody QuizRequest request
+    ) {
+        return ResponseEntity.ok(quizService.updateQuiz(id, request));
+    }
+
     @PostMapping("/add/{quizId}")
     public ResponseEntity<Question> addQuestionToQuiz (@PathVariable Long quizId, @RequestBody Question question){
         Question createdQuestion = quizService.addQuestionToQuiz(quizId, question);
