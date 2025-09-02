@@ -20,6 +20,9 @@ import {
     DELETE_QUIZ_REQUEST,
     DELETE_QUIZ_SUCCESS,
     DELETE_QUIZ_FAILURE,
+    UPDATE_QUIZ_FAILURE,
+    UPDATE_QUIZ_REQUEST,
+    UPDATE_QUIZ_SUCCESS,
 } from "./ActionType";
 
 const initialState = {
@@ -35,6 +38,7 @@ export const quizReducer = (state = initialState, action) => {
     switch (action.type) {
         // ========== Create Quiz ==========
         case CREATE_QUIZ_REQUEST:
+        case UPDATE_QUIZ_REQUEST:
         case ADD_QUESTION_REQUEST:
         case GET_QUIZ_BY_ID_REQUEST:
         case GET_QUIZZES_BY_PROGRAM_REQUEST:
@@ -53,6 +57,15 @@ export const quizReducer = (state = initialState, action) => {
                 isLoading: false,
                 quizzes: [...state.quizzes, action.payload]
             };
+        case UPDATE_QUIZ_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                quizzes: state.quizzes.map((q) =>
+                    q.id === action.payload.id ? action.payload : q
+                ),
+                selectedQuiz: action.payload
+            }
 
         case ADD_QUESTION_SUCCESS:
             return {
@@ -100,6 +113,7 @@ export const quizReducer = (state = initialState, action) => {
             };
 
         case CREATE_QUIZ_FAILURE:
+        case UPDATE_QUIZ_FAILURE:
         case ADD_QUESTION_FAILURE:
         case GET_QUIZ_BY_ID_FAILURE:
         case GET_QUIZZES_BY_PROGRAM_FAILURE:

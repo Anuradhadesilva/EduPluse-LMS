@@ -5,7 +5,8 @@ import { AddQuiz } from '../components/Quiz/AddQuiz';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProgramById, updateProgram } from '../state/Program/Action';
-import { deleteQuiz } from '../state/Quiz/Action';
+import { deleteQuiz, updateQuiz } from '../state/Quiz/Action';
+import { UpdateQuiz } from '../components/Quiz/UpdateQuiz';
 
 export const AdminProgramDetails = () => {
     const { id } = useParams();
@@ -13,6 +14,7 @@ export const AdminProgramDetails = () => {
     const [error, setError] = useState('');
 
     const [showQuizForm, setShowQuizForm] = useState(false);
+    const [showUpdateQuizForm, setShowUpdateQuizForm] = useState(null);
     const dispatch = useDispatch();
     const jwt = localStorage.getItem("jwt");
     const { selectedProgram: program } = useSelector((store) => store.program)
@@ -203,22 +205,39 @@ export const AdminProgramDetails = () => {
                         {(program.quizzes || []).map(quiz => (
                             <li
                                 key={quiz.id}
-                                className="border p-3 rounded flex justify-between items-center"
+                                className="border p-3 rounded flex flex-col gap-2"
                             >
-                                <span>{quiz.title}</span>
-                                <div className='space-x-4'>
-                                    <button
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteQuiz(quiz.id)}
-                                        className="text-red-600 hover:underline"
-                                    >
-                                        Delete
-                                    </button>
+                                <div className="flex justify-between items-center">
+                                    <span>{quiz.title}</span>
+                                    <div className="space-x-4">
+                                        <button
+                                            className="text-blue-600 hover:underline"
+                                            onClick={() =>
+                                                setShowUpdateQuizForm((prev) => (prev === quiz.id ? null : quiz.id))
+                                            }
+                                        >
+                                            {showUpdateQuizForm === quiz.id ? "Close" : "Edit"}
+                                        </button>
+
+                                        <button
+                                            onClick={() => handleDeleteQuiz(quiz.id)}
+                                            className="text-red-600 hover:underline"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {/* Show UpdateQuiz directly below the clicked quiz */}
+                                {showUpdateQuizForm === quiz.id && (
+                                    <div className="mt-3">
+                                        <UpdateQuiz
+                                            programId={program.id}
+                                            programTitle={program.title}
+                                            quizId={quiz.id}
+                                        />
+                                    </div>
+                                )}
                             </li>
                         ))}
                     </ul>

@@ -1,5 +1,7 @@
 import { api } from "../../config/api";
-import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, DELETE_QUIZ_FAILURE, DELETE_QUIZ_REQUEST, DELETE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS } from "./ActionType"
+import quizData from "../../constants/quizData";
+import { UPDATE_PROGRAM_REQUEST } from "../Program/ActionType";
+import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, DELETE_QUIZ_FAILURE, DELETE_QUIZ_REQUEST, DELETE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS, UPDATE_QUIZ_FAILURE, UPDATE_QUIZ_REQUEST, UPDATE_QUIZ_SUCCESS } from "./ActionType"
 
 export const createQuiz = (jwt, quizData) => async (dispatch) => {
     dispatch({ type: CREATE_QUIZ_REQUEST });
@@ -14,6 +16,22 @@ export const createQuiz = (jwt, quizData) => async (dispatch) => {
         console.error("❌ Error creating quiz:", err.message);
     }
 }
+
+export const updateQuiz = (jwt, quizId, quizData) => async (dispatch) => {
+    dispatch({ type: UPDATE_QUIZ_REQUEST });
+    try {
+        const { data } = await api.put(`/api/quiz/update/${quizId}`, quizData, {
+            headers: { Authorization: `Bearer ${jwt}` },
+        });
+        dispatch({ type: UPDATE_QUIZ_SUCCESS, payload: data });
+        console.log("✅ Quiz updated:", data);
+    } catch (err) {
+        dispatch({ type: UPDATE_QUIZ_FAILURE, payload: err.message });
+        console.error("❌ Error updating quiz:", err.message);
+    }
+};
+
+
 
 export const addQuestion = (jwt, quizId, question) => async (dispatch) => {
     dispatch({ type: ADD_QUESTION_REQUEST });
