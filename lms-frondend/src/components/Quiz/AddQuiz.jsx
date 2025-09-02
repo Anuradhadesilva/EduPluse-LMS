@@ -7,7 +7,7 @@ import { createQuiz } from '../../state/Quiz/Action';
 import quizData from '../../constants/quizData';
 import { getProgramById } from '../../state/Program/Action';
 
-export const AddQuiz = ({ programId, programTitle }) => {
+export const AddQuiz = ({ programId, programTitle, quizId }) => {
     const disptach = useDispatch();
     const jwt = localStorage.getItem("jwt");
     const [quizTitle, setQuizTitle] = useState('');
