@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface QuizService {
     Quiz createQuiz( QuizRequest request);
     Quiz getQuizById(Long id);
+    Quiz updateQuiz(Long id, QuizRequest request);
     List<Quiz> getAllQuizzes();
     List<Quiz> getQuizzesByProgramId(Long programId);
     Question addQuestionToQuiz(Long quizId,Question question);

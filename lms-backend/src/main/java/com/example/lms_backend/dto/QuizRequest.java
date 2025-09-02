@@ -20,6 +20,7 @@ public class QuizRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QuestionRequest{
+        private Long id;
         private String question;
         private String optionA;
         private String optionB;

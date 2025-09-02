@@ -37,10 +37,7 @@ export const AdminPrograms = () => {
             dispatch(deleteProgram(jwt, id));
             console.log(id);
         }
-
     }
-
-
 
     const filteredPrograms = programs.filter((program) =>
         program.title.toLowerCase().includes(searchTerm.toLowerCase())
