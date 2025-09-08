@@ -28,16 +28,22 @@ export const loginUser = (reqData) => async (dispatch) => {
             `${API_URL}/auth/signin`,
             reqData.userData
         );
+
         if (data.jwt) localStorage.setItem("jwt", data.jwt);
         if (data.role) localStorage.setItem("role", data.role);
+
+        // ✅ store full user object too
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+
         reqData.navigate("/");
-        dispatch({ type: LOGIN_SUCCESS, payload: data.jwt });
+        dispatch({ type: LOGIN_SUCCESS, payload: { jwt: data.jwt, role: data.role, user: data.user } });
         console.log("login success", data);
     } catch (error) {
         dispatch({ type: LOGIN_FAILURE, payload: error });
         console.log("error", error);
     }
 };
+
 
 export const getUser = (jwt) => async (dispatch) => {
     dispatch({ type: GET_USER_REQUEST });
