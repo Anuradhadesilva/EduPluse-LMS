@@ -30,6 +30,9 @@ export const loginUser = (reqData) => async (dispatch) => {
         );
         if (data.jwt) localStorage.setItem("jwt", data.jwt);
         if (data.role) localStorage.setItem("role", data.role);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+
+
         reqData.navigate("/");
         dispatch({ type: LOGIN_SUCCESS, payload: data.jwt });
         console.log("login success", data);

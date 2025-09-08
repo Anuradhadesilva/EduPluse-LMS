@@ -29,7 +29,8 @@ export const authReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 jwt: action.payload,
-                role: localStorage.getItem("role"),      // here payload = jwt // read role back in
+                role: localStorage.getItem("role"),
+                user: action.payload.user,     // here payload = jwt // read role back in
                 success: "Auth Success",
             }
 
