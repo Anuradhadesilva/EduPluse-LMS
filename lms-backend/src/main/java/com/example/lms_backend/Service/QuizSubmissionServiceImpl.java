@@ -27,6 +27,12 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
         Quiz quiz = quizRepository.findById(request.getQuizId()).orElseThrow(()->new RuntimeException("Quiz not found"));
         User user = userRepository.findById(request.getUserId()).orElseThrow(()->new RuntimeException("User not found"));
 
+        boolean alreadySubmitted = quizSubmissionRepository.existsByQuizIdAndUserId(
+                request.getQuizId(), request.getUserId()
+        );
+        if (alreadySubmitted) {
+            throw new RuntimeException("You have already attempted this quiz.");
+        }
 
         QuizSubmission submission = new QuizSubmission();
         submission.setQuiz(quiz);

@@ -1,7 +1,7 @@
 import { api } from "../../config/api";
 import quizData from "../../constants/quizData";
-import { UPDATE_PROGRAM_REQUEST } from "../Program/ActionType";
-import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, DELETE_QUIZ_FAILURE, DELETE_QUIZ_REQUEST, DELETE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS, SUBMIT_QUIZ_FAILURE, SUBMIT_QUIZ_REQUEST, SUBMIT_QUIZ_SUCCESS, UPDATE_QUIZ_FAILURE, UPDATE_QUIZ_REQUEST, UPDATE_QUIZ_SUCCESS } from "./ActionType"
+import { GET_STUDENTS_BY_PROGRAM_FAILURE, UPDATE_PROGRAM_REQUEST } from "../Program/ActionType";
+import { ADD_QUESTION_FAILURE, ADD_QUESTION_REQUEST, ADD_QUESTION_SUCCESS, CREATE_QUIZ_FAILURE, CREATE_QUIZ_REQUEST, CREATE_QUIZ_SUCCESS, DELETE_QUIZ_FAILURE, DELETE_QUIZ_REQUEST, DELETE_QUIZ_SUCCESS, GET_QUIZ_BY_ID_FAILURE, GET_QUIZ_BY_ID_REQUEST, GET_QUIZ_BY_ID_SUCCESS, GET_SUBMISSIONS_BY_USER_REQUEST, GET_SUBMISSIONS_BY_USER_SUCCESS, SUBMIT_QUIZ_FAILURE, SUBMIT_QUIZ_REQUEST, SUBMIT_QUIZ_SUCCESS, UPDATE_QUIZ_FAILURE, UPDATE_QUIZ_REQUEST, UPDATE_QUIZ_SUCCESS } from "./ActionType"
 
 export const createQuiz = (jwt, quizData) => async (dispatch) => {
     dispatch({ type: CREATE_QUIZ_REQUEST });
@@ -87,3 +87,15 @@ export const submitQuiz = (jwt, submissionData) => async (dispatch) => {
         console.error("❌ Error Submitting Quiz:", err.message);
     }
 }
+
+export const getUserSubmissions = (userId) => async (dispatch) => {
+    dispatch({ type: GET_SUBMISSIONS_BY_USER_REQUEST });
+    try {
+        const { data } = await api.get(`/api/submission/user/${userId}`);
+        dispatch({ type: GET_SUBMISSIONS_BY_USER_SUCCESS, payload: data });
+        console.log("✅ get submitted answers:", data);
+    } catch (err) {
+        dispatch({ type: GET_STUDENTS_BY_PROGRAM_FAILURE, payload: err.message });
+        console.error("❌ Error getting Submitted Quiz:", err.message);
+    }
+};
