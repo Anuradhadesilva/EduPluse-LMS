@@ -137,7 +137,7 @@ export const deleteProgram = (jwt, id) => async (dispatch) => {
 export const getStudentsByProgram = (jwt, programId) => async (dispatch) => {
     dispatch({ type: GET_STUDENTS_BY_PROGRAM_REQUEST });
     try {
-        const { data } = await api.get(`/api/program//${programId}/students`, {
+        const { data } = await api.get(`/api/program/${programId}/students`, {
             headers: { Authorization: `Bearer ${jwt}` },
         });
         console.log("✅ Students fetched for program:", data);

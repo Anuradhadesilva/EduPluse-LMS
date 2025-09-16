@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final QuizSubmissionRepository quizSubmissionRepository;
+    private final QuizAttemptRepository quizAttemptRepository;
     private final AnswerRepository answerRepository;
 
 
@@ -67,6 +69,10 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
         submission.setScore(correctCount);
         quizSubmissionRepository.save(submission);
 
+        Optional<QuizAttempt> inProgressAttempt = quizAttemptRepository
+                .findByUserIdAndQuizIdAndStatus(user.getId(), quiz.getId(), QuizAttempt.AttemptStatus.IN_PROGRESS);
+
+        inProgressAttempt.ifPresent(quizAttemptRepository::delete);
         return new QuizSubmissionResponse(
                 "Quiz submitted successfully",
                 correctCount,

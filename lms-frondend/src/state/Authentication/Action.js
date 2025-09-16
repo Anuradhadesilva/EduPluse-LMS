@@ -1,6 +1,9 @@
 import axios from "axios";
-import { GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType";
+import { CLEAR_AUTH_ERROR, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType";
 import { api, API_URL } from "../../config/api";
+import { closeLoginModal } from "../UI/uiSlice";
+
+export const clearAuthError = () => ({ type: CLEAR_AUTH_ERROR });
 
 export const registerUser = (reqData) => async (dispatch) => {
     dispatch({ type: REGISTER_REQUEST });
@@ -15,7 +18,7 @@ export const registerUser = (reqData) => async (dispatch) => {
         dispatch({ type: REGISTER_SUCCESS, payload: data.jwt });
         console.log("register succcess", data);
     } catch (error) {
-        dispatch({ type: REGISTER_FAILURE, payload: error });
+        dispatch({ type: REGISTER_FAILURE, payload: error.response?.data?.message || error.message });
         console.log("error", error);
 
     }
@@ -30,14 +33,12 @@ export const loginUser = (reqData) => async (dispatch) => {
         );
         if (data.jwt) localStorage.setItem("jwt", data.jwt);
         if (data.role) localStorage.setItem("role", data.role);
-        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
-
-
         reqData.navigate("/");
         dispatch({ type: LOGIN_SUCCESS, payload: data.jwt });
+        dispatch(closeLoginModal()); // Close the modal on successful login
         console.log("login success", data);
     } catch (error) {
-        dispatch({ type: LOGIN_FAILURE, payload: error });
+        dispatch({ type: LOGIN_FAILURE, payload: error.response?.data?.message || error.message });
         console.log("error", error);
     }
 };
@@ -55,7 +56,8 @@ export const getUser = (jwt) => async (dispatch) => {
         });
         console.log("user profile", data);
     } catch (error) {
-        dispatch({ type: GET_USER_FAILURE, payload: error });
+        dispatch({ type: GET_USER_FAILURE, payload: error.response?.data?.message || error.message });
+
         console.log("error", error);
     }
 };

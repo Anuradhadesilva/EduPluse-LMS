@@ -42,7 +42,7 @@ export const Entrolled = () => {
                                     duration={enroll.program.duration}
                                     price={enroll.program.price}
                                     index={index}
-                                    onEnroll={() => handleEnroll(enroll.program.id)}
+                                // onEnroll={() => handleEnroll(enroll.program.id)}
                                 />
                             </li>
                         ))}
