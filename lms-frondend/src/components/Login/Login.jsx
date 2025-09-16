@@ -1,101 +1,87 @@
-// components/LoginSidebar.jsx
-import React, { useState } from 'react';
-import { IoCloseCircleOutline } from 'react-icons/io5';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { loginUser } from '../../state/Authentication/Action';
+import { useNavigate } from 'react-router-dom';
+import { closeLoginModal } from '../../state/UI/uiSlice';
+import { loginUser, registerUser, clearAuthError } from '../../state/Authentication/Action';
+import { IoClose } from "react-icons/io5";
 
-
-
-export const Login = ({ isOpen, onClose }) => {
+export const Login = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const dispatch = useDispatch()
+    const { isLoginModalOpen } = useSelector(state => state.ui);
+    const { auth } = useSelector(state => state);
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [formData, setFormData] = useState({ fullName: '', email: '', password: '' });
 
-    const { isLoading, error } = useSelector(state => state.auth);
+    // Effect to clear any lingering errors when the modal opens
+    useEffect(() => {
+        if (isLoginModalOpen) {
+            dispatch(clearAuthError());
+        }
+    }, [isLoginModalOpen, dispatch]);
 
-    const [loginData, setLoginData] = useState({
-        email: "",
-        password: ""
-    });
+    const handleClose = () => dispatch(closeLoginModal());
 
     const handleChange = (e) => {
-        setLoginData({
-            ...loginData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(loginUser({ userData: loginData, navigate }));
+        // Pass the navigate function along with the form data
+        const reqData = { userData: formData, navigate };
+        if (isRegistering) {
+            dispatch(registerUser(reqData));
+        } else {
+            dispatch(loginUser(reqData));
+        }
     };
+
+    // Function to toggle between Login and Register forms
+    const toggleFormType = () => {
+        dispatch(clearAuthError()); // Clear errors when switching
+        setIsRegistering(!isRegistering);
+        setFormData({ fullName: '', email: '', password: '' }); // Reset form fields
+    };
+
+    if (!isLoginModalOpen) return null;
+
     return (
-        <>
-            {isOpen && (
-                <div
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md m-4 relative">
+                <button onClick={handleClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                    <IoClose size={24} />
+                </button>
 
-                    className="fixed inset-0  bg-opacity-40 z-40"
-                    onClick={onClose}
-                ></div>
-            )}
+                <h2 className="text-2xl font-bold text-center mb-2">
+                    {isRegistering ? 'Create Your Account' : 'Welcome Back'}
+                </h2>
+                <p className="text-center text-gray-500 mb-6">
+                    {isRegistering ? 'Join to start your learning journey.' : 'Log in to continue.'}
+                </p>
 
-            <div
-                className={`fixed top-0 right-0 h-full w-[400px] bg-blue-50 shadow-lg transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'
-                    }`}
-            >
-                <div className="p-6 h-full">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">Login</h2>
-                        <IoCloseCircleOutline
-                            size={28}
-                            onClick={onClose}
-                            className="cursor-pointer"
-                        />
-                    </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {isRegistering && (
+                        <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    )}
+                    <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
 
-                    <form className="space-y-4" onSubmit={handleSubmit} >
-                        <div>
-                            <label className="block mb-1 text-gray-700">Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Email"
-                                className="w-full p-3 border border-gray-300 "
-                                value={loginData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-1 text-gray-800">Password:</label>
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                className="w-full p-3 border border-gray-300 "
-                                name="password"
-                                value={loginData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full bg-black text-white py-3 "
-                        >
-                            Login
-                        </button>
-                        <p className='text-sm underline text-center'>Forgot your password</p>
-                        <Link
-                            to='/create-account'
-                            className="block w-full text-black text-center border border-black py-3"
-                            onClick={() => {
-                                onClose();
-                            }}
-                        >
-                            Create Account
-                        </Link>
-                    </form>
-                </div>
+                    {auth.error && <p className="text-red-500 text-sm text-center mt-2">{auth.error}</p>}
+
+                    <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300" disabled={auth.isLoading}>
+                        {auth.isLoading ? 'Loading...' : (isRegistering ? 'Register' : 'Login')}
+                    </button>
+                </form>
+
+                <p className="text-center text-sm text-gray-600 mt-6">
+                    {isRegistering ? 'Already have an account?' : "Don't have an account?"}
+                    <button type="button" onClick={toggleFormType} className="ml-1 text-blue-600 font-semibold hover:underline">
+                        {isRegistering ? 'Login' : 'Sign Up'}
+                    </button>
+                </p>
             </div>
-        </>
+        </div>
     );
 };
+

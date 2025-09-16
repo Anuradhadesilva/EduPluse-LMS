@@ -1,28 +1,38 @@
-import React from 'react'
-import heroImg from '../../assets/hero-1.png'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import heroImg from '../../assets/hero-1.png'; // Make sure this path is correct
 
-function Hero() {
+export const Hero = () => {
+    const scrollToFeatures = () => {
+        const featuresSection = document.getElementById('features');
+        if (featuresSection) {
+            featuresSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
-        <div className='w-full md:h-screen h-auto flex items-end justify-center md:px-16 sm:px-10 px-4 md:pt-0 md:pb-0 pt-[10ch] pb-8'>
-            <div className='w-full flex items-center justify-between md:gap-16 gap-4 md:flex-nowrap flex-wrap md:flex-row flex-col-reverse'>
-                <div className='md:w-1/2 w-full h-auto md:space-y-8 space-y-6'>
-                    <h2 className='text-2xl font-semibold'>The Leader in Online Learning</h2>
-                    <h2 className='text-6xl md:w-[500px] leading-tight font-bold bg-gradient-to-r from-indigo-500 via-sky-700 via-20% to-purple-700 bg-clip-text text-transparent'>
-                        Join Today & Start Learning
-                    </h2>
-                    <h3 className='text-sm md:text-lg font-medium'>The best place to discover new learning resources, books, and courses</h3>
-                    <div className='flex flex-row gap-4'>
-                        <button className='bg-gradient-to-tr hover:bg-gradient-to-tl from-indigo-500 via-sky-700 via-20% to-purple-700 text-neutral-50cursor-pointer py-2 px-6 rounded-xl text-base font-semibold ease-in-out duration-300 text-white'>Get Started</button>
-                        <button className='p-2 px-4 border border-gray-400 text-gray-700 rounded-xl text-base font-semibold ease-in-out duration-300'>Learn More</button>
+        <div className="w-full min-h-screen bg-sky-50">
+            <div className="container mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center justify-between">
+                <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+                    <h1 className="text-4xl md:text-6xl font-bold text-gray-800 leading-tight mb-4">
+                        Unlock Your Potential with <span className="text-blue-600">EduPlus</span>
+                    </h1>
+                    <p className="text-lg text-gray-600 mb-8">
+                        The premier destination for online learning. Explore expert-led courses, take engaging quizzes, and achieve your goals.
+                    </p>
+                    <div className="flex justify-center md:justify-start gap-4">
+                        <Link to="/programs" className="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition duration-300">
+                            Get Started
+                        </Link>
+                        <button onClick={scrollToFeatures} className="bg-transparent text-gray-700 font-bold py-3 px-8 rounded-lg border-2 border-gray-300 hover:bg-gray-100 transition duration-300">
+                            Learn More
+                        </button>
                     </div>
                 </div>
-                <div className='md:w-1/2 w-full h-auto md:space-y-8 space-y-6'>
-                    <img src={heroImg} alt="" className='' />
+                <div className="md:w-1/2">
+                    <img src={heroImg} alt="Online Learning Platform" className="w-full h-auto" />
                 </div>
-
             </div>
         </div>
-    )
-}
-
-export default Hero
+    );
+};

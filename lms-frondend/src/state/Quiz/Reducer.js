@@ -1,3 +1,4 @@
+import { LOGOUT } from "../Authentication/ActionType";
 import {
     CREATE_QUIZ_REQUEST,
     CREATE_QUIZ_SUCCESS,
@@ -23,6 +24,12 @@ import {
     UPDATE_QUIZ_FAILURE,
     UPDATE_QUIZ_REQUEST,
     UPDATE_QUIZ_SUCCESS,
+    GET_IN_PROGRESS_ATTEMPT_REQUEST,
+    SAVE_QUIZ_PROGRESS_REQUEST,
+    GET_IN_PROGRESS_ATTEMPT_SUCCESS,
+    SAVE_QUIZ_PROGRESS_SUCCESS,
+    GET_IN_PROGRESS_ATTEMPT_FAILURE,
+    SAVE_QUIZ_PROGRESS_FAILURE,
 } from "./ActionType";
 
 const initialState = {
@@ -30,7 +37,9 @@ const initialState = {
     selectedQuiz: null,
     submissions: [],
     submissionResult: null,
+    inProgressAttempt: null, // ✅ To store saved progress
     isLoading: false,
+    isSaving: false, // ✅ To track if progress is being saved
     error: null,
 };
 
@@ -45,9 +54,16 @@ export const quizReducer = (state = initialState, action) => {
         case DELETE_QUIZ_REQUEST:
         case SUBMIT_QUIZ_REQUEST:
         case GET_SUBMISSIONS_BY_USER_REQUEST:
+        case GET_IN_PROGRESS_ATTEMPT_REQUEST: // Add to loading group
             return {
                 ...state,
                 isLoading: true,
+                error: null
+            };
+        case SAVE_QUIZ_PROGRESS_REQUEST: // Handle saving state separately
+            return {
+                ...state,
+                isSaving: true,
                 error: null
             };
 
@@ -111,6 +127,18 @@ export const quizReducer = (state = initialState, action) => {
                 isLoading: false,
                 submissions: action.payload
             };
+        case GET_IN_PROGRESS_ATTEMPT_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                inProgressAttempt: action.payload
+            };
+
+        case SAVE_QUIZ_PROGRESS_SUCCESS:
+            return {
+                ...state,
+                isSaving: false,
+            };
 
         case CREATE_QUIZ_FAILURE:
         case UPDATE_QUIZ_FAILURE:
@@ -120,8 +148,11 @@ export const quizReducer = (state = initialState, action) => {
         case SUBMIT_QUIZ_FAILURE:
         case GET_SUBMISSIONS_BY_USER_FAILURE:
         case DELETE_QUIZ_FAILURE:
+        case GET_IN_PROGRESS_ATTEMPT_FAILURE:
+        case SAVE_QUIZ_PROGRESS_FAILURE:
             return { ...state, isLoading: false, error: action.payload };
-
+        case LOGOUT:
+            return initialState;
         default:
             return state;
     }

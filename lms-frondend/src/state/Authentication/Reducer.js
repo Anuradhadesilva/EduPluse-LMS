@@ -1,5 +1,5 @@
 
-import { GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType"
+import { CLEAR_AUTH_ERROR, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType"
 const initialState = {
     user: null,
     jwt: null,
@@ -29,8 +29,8 @@ export const authReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 jwt: action.payload,
-                role: localStorage.getItem("role"),
-                user: action.payload.user,     // here payload = jwt // read role back in
+                user: action.payload.user,
+                role: action.payload.role,     // here payload = jwt // read role back in
                 success: "Auth Success",
             }
 
@@ -55,6 +55,8 @@ export const authReducer = (state = initialState, action) => {
             return {
                 ...initialState
             };
+        case CLEAR_AUTH_ERROR: // Add this new case to handle clearing the error
+            return { ...state, error: null };
         default:
             return state;
     }

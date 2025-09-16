@@ -22,7 +22,6 @@ export const AdminProgramDetails = () => {
         if (id) {
             dispatch(getProgramById(id));
         }
-
         window.scrollTo(0, 0);
     }, [dispatch, id]);
 
