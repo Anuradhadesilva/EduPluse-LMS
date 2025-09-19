@@ -33,7 +33,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
                 </div>
 
                 <div className="flex justify-between items-center mt-auto">
-                    <span className="text-xl font-bold text-gray-900">${price}</span>
+                    <span className="text-xl font-bold text-gray-900">{price}</span>
                     {isEnrolled ? (
                         <Button
                             component={Link}

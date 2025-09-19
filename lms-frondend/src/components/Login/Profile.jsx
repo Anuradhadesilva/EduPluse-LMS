@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-// Material-UI components for a professional and structured layout
+
 import { Avatar, Box, Paper, Typography, List, ListItem, ListItemText, Divider, CircularProgress, Tabs, Tab, Button } from '@mui/material';
 import { FiBookOpen, FiCheckSquare, FiUser, FiSettings } from 'react-icons/fi';
 import { getEnrolledPrograms } from '../../state/Program/Action';
 import { getUserSubmissions } from '../../state/Quiz/Action';
 
-// TabPanel component to associate content with a specific tab
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
     return (

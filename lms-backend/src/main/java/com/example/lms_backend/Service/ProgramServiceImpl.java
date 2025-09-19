@@ -1,33 +1,30 @@
 package com.example.lms_backend.Service;
 
 import com.example.lms_backend.Model.*;
-import com.example.lms_backend.Repo.ProgramRepository;
-import com.example.lms_backend.Repo.SubmittedAnswerRepository;
+import com.example.lms_backend.Repo.*;
 import com.example.lms_backend.dto.CreateProgramRequest;
-import com.example.lms_backend.dto.DocumentDTO;
-import com.example.lms_backend.dto.VideoDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProgramServiceImpl implements ProgramService {
 
-    @Autowired
-    private ProgramRepository programRepository;
-
-    @Autowired
-    private final SubmittedAnswerRepository submittedAnswerRepository;
-
+    private final ProgramRepository programRepository;
+    // Add repositories for new content types
+    private final VideoRepository videoRepository;
+    private final DocumentRepository documentRepository;
+    private final QuizRepository quizRepository;
 
     @Override
+    @Transactional
     public Program createProgram(CreateProgramRequest request) {
         Program program = new Program();
         updateProgramFromRequest(program, request);
@@ -49,88 +46,123 @@ public class ProgramServiceImpl implements ProgramService {
     @Transactional
     public void deleteProgram(Long id) {
         Program program = getProgramById(id);
-        for (Quiz quiz : program.getQuizzes()) {
-            for(Question question : quiz.getQuestions()) {
-                submittedAnswerRepository.deleteByQuestion(question);
-            }
-        }
+
+        // ✅ FIX: Manually detach all associated content before deleting the program.
+        // This satisfies the foreign key constraints.
+
+        // 1. Find all Videos, Documents, and Quizzes linked to this program.
+        // This includes content linked directly OR indirectly through lessons.
+        List<Video> videosToDetach = videoRepository.findByProgramId(id);
+        List<Document> documentsToDetach = documentRepository.findByProgramId(id);
+        List<Quiz> quizzesToDetach = quizRepository.findByProgramId(id);
+
+        // 2. Set their program reference to null to break the foreign key link.
+        videosToDetach.forEach(video -> video.setProgram(null));
+        documentsToDetach.forEach(doc -> doc.setProgram(null));
+        quizzesToDetach.forEach(quiz -> quiz.setProgram(null));
+
+        // 3. Save the changes to the content tables.
+        videoRepository.saveAll(videosToDetach);
+        documentRepository.saveAll(documentsToDetach);
+        quizRepository.saveAll(quizzesToDetach);
+
+        // 4. Now it is safe to delete the program.
+        // The cascading delete will handle removing the sections and lessons.
         programRepository.delete(program);
     }
 
     @Override
+    @Transactional
     public Program updateProgram(Long id, CreateProgramRequest request) {
         Program program = getProgramById(id);
-
         updateProgramFromRequest(program, request);
         return programRepository.save(program);
     }
 
-
-    // 🔧 Extracted helper to populate program from DTO
+    // This helper method now handles the professional hierarchical structure
     private void updateProgramFromRequest(Program program, CreateProgramRequest request) {
-        program.setImage(request.getImage());
-        program.setCategory(request.getCategory());
-        program.setRating(request.getRating());
+        // Update professional program details
         program.setTitle(request.getTitle());
-        program.setLessons(request.getLessons());
-        program.setStudents(request.getStudents());
-        program.setDuration(request.getDuration());
-        program.setPrice(request.getPrice());
+        program.setSubtitle(request.getSubtitle());
+        program.setDescription(request.getDescription());
+        program.setLanguage(request.getLanguage());
+        program.setCategory(request.getCategory());
+        program.setSubcategory(request.getSubcategory());
+        program.setImageUrl(request.getImageUrl());
+        program.setSkillLevel(request.getSkillLevel());
+        program.setLearningObjectives(request.getLearningObjectives());
+        program.setPrerequisites(request.getPrerequisites());
+        program.setStatus(Program.ProgramStatus.DRAFT); // Default status
 
-        // Update videos
-        Map<Long, Video> existingVideos = program.getVideos().stream()
-                .filter(v -> v.getId() != null)
-                .collect(Collectors.toMap(Video::getId, v -> v));
-
-        List<Video> updatedVideos = new ArrayList<>();
-
-        if (request.getVideos() != null) {
-            for (VideoDTO dto : request.getVideos()) {
-                if (dto.getId() != null && existingVideos.containsKey(dto.getId())) {
-                    // Update existing video
-                    Video existing = existingVideos.get(dto.getId());
-                    existing.setTitle(dto.getTitle());
-                    existing.setUrl(dto.getUrl());
-                    updatedVideos.add(existing);
-                } else {
-                    // Add new video
-                    Video newVideo = new Video();
-                    newVideo.setTitle(dto.getTitle());
-                    newVideo.setUrl(dto.getUrl());
-                    newVideo.setProgram(program);
-                    updatedVideos.add(newVideo);
-                }
-            }
+        // Hierarchical Content Update Logic
+        if (request.getSections() == null) {
+            program.getSections().clear();
+            return;
         }
 
-        program.getVideos().clear();
-        program.getVideos().addAll(updatedVideos);
+        Map<Long, Section> existingSections = program.getSections().stream()
+                .filter(s -> s.getId() != null)
+                .collect(Collectors.toMap(Section::getId, Function.identity()));
 
-        // Update documents
-        Map<Long, Document> existingDocs = program.getDocuments().stream()
-                .filter(d -> d.getId() != null)
-                .collect(Collectors.toMap(Document::getId, d -> d));
+        List<Section> updatedSections = new ArrayList<>();
+        int sectionOrder = 1;
 
-        List<Document> updatedDocs = new ArrayList<>();
+        for (CreateProgramRequest.SectionDTO sectionDto : request.getSections()) {
+            Section section = existingSections.getOrDefault(sectionDto.getId(), new Section());
+            section.setTitle(sectionDto.getTitle());
+            section.setOrder(sectionOrder++);
+            section.setProgram(program);
 
-        if (request.getDocuments() != null) {
-            for (DocumentDTO dto : request.getDocuments()) {
-                if (dto.getId() != null && existingDocs.containsKey(dto.getId())) {
-                    Document existing = existingDocs.get(dto.getId());
-                    existing.setTitle(dto.getTitle());
-                    existing.setLink(dto.getLink());
-                    updatedDocs.add(existing);
-                } else {
-                    Document newDoc = new Document();
-                    newDoc.setTitle(dto.getTitle());
-                    newDoc.setLink(dto.getLink());
-                    newDoc.setProgram(program);
-                    updatedDocs.add(newDoc);
+            Map<Long, Lesson> existingLessons = section.getLessons().stream()
+                    .filter(l -> l.getId() != null)
+                    .collect(Collectors.toMap(Lesson::getId, Function.identity()));
+            List<Lesson> updatedLessons = new ArrayList<>();
+            int lessonOrder = 1;
+
+            if (sectionDto.getLessons() != null) {
+                for (CreateProgramRequest.LessonDTO lessonDto : sectionDto.getLessons()) {
+                    Lesson lesson = existingLessons.getOrDefault(lessonDto.getId(), new Lesson());
+                    lesson.setTitle(lessonDto.getTitle());
+                    lesson.setOrder(lessonOrder++);
+                    lesson.setSection(section);
+
+                    if (lessonDto.getType() == null || lessonDto.getType().isBlank()) {
+                        throw new IllegalArgumentException("Lesson type cannot be null for lesson: '" + lessonDto.getTitle() + "'");
+                    }
+                    lesson.setLessonType(Lesson.LessonType.valueOf(lessonDto.getType()));
+
+                    switch (lesson.getLessonType()) {
+                        case VIDEO:
+                            if (lessonDto.getVideo() == null) throw new IllegalArgumentException("Video details are required for a video lesson.");
+                            Video video = lesson.getVideo() != null ? lesson.getVideo() : new Video();
+                            video.setTitle(lessonDto.getVideo().getTitle());
+                            video.setUrl(lessonDto.getVideo().getUrl());
+                            videoRepository.save(video); // Save the video to get an ID
+                            lesson.setVideo(video);
+                            break;
+                        case DOCUMENT:
+                            if (lessonDto.getDocument() == null) throw new IllegalArgumentException("Document details are required for a document lesson.");
+                            Document doc = lesson.getDocument() != null ? lesson.getDocument() : new Document();
+                            doc.setTitle(lessonDto.getDocument().getTitle());
+                            doc.setLink(lessonDto.getDocument().getLink());
+                            documentRepository.save(doc); // Save the document to get an ID
+                            lesson.setDocument(doc);
+                            break;
+                        case QUIZ:
+                            if (lessonDto.getQuizId() == null) throw new IllegalArgumentException("A Quiz ID is required for a quiz lesson.");
+                            Quiz quiz = quizRepository.findById(lessonDto.getQuizId()).orElseThrow(() -> new RuntimeException("Quiz not found with ID: " + lessonDto.getQuizId()));
+                            lesson.setQuiz(quiz);
+                            break;
+                    }
+                    updatedLessons.add(lesson);
                 }
             }
+            section.getLessons().clear();
+            section.getLessons().addAll(updatedLessons);
+            updatedSections.add(section);
         }
 
-        program.getDocuments().clear();
-        program.getDocuments().addAll(updatedDocs);
+        program.getSections().clear();
+        program.getSections().addAll(updatedSections);
     }
 }
