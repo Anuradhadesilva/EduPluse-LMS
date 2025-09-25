@@ -162,14 +162,19 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
 
 /* ---------- Lesson Editor ---------- */
 const LessonEditor = ({ lesson, onLessonChange, onRemove }) => {
-    const handleChange = (field, value) =>
+    const handleChange = (field, value) => {
         onLessonChange({ ...lesson, [field]: value });
+    };
 
-    const handleNestedChange = (objectKey, field, value) =>
+    const handleNestedChange = (objectKey, field, value) => {
         onLessonChange({
             ...lesson,
             [objectKey]: { ...(lesson[objectKey] ?? {}), [field]: value },
         });
+    };
+
+    // ✅ FIX: Consistently use 'lessonType' which matches the backend model
+    const lessonType = lesson.lessonType || 'VIDEO';
 
     return (
         <Paper elevation={2} className="p-4 space-y-4">
@@ -192,8 +197,10 @@ const LessonEditor = ({ lesson, onLessonChange, onRemove }) => {
             <FormControl fullWidth size="small">
                 <InputLabel>Lesson Type</InputLabel>
                 <Select
-                    value={lesson.lessonType || 'VIDEO'}
-                    onChange={(e) => handleChange('type', e.target.value)}
+                    value={lessonType}
+                    label="Lesson Type" // Add label for accessibility
+                    // ✅ FIX: Update the 'lessonType' property on change
+                    onChange={(e) => handleChange('lessonType', e.target.value)}
                 >
                     <MenuItem value="VIDEO">Video</MenuItem>
                     <MenuItem value="DOCUMENT">Document</MenuItem>
@@ -202,60 +209,68 @@ const LessonEditor = ({ lesson, onLessonChange, onRemove }) => {
             </FormControl>
 
             {/* Content Based on Type */}
-            {lesson.lessonType === 'VIDEO' && (
-                <div className="p-3 bg-blue-50 rounded-md space-y-2 border border-blue-200">
-                    <Typography variant="caption">Video Content</Typography>
+            {lessonType === 'VIDEO' && (
+                <div className="p-3 bg-blue-50/50 rounded-md space-y-2 border border-blue-200">
+                    <Typography
+                        variant="caption"
+                        color="text.secondary">Video Content</Typography>
                     <TextField
                         label="Video Title"
                         size="small"
                         fullWidth
                         value={lesson.video?.title || ''}
-                        onChange={(e) => handleNestedChange('video', 'title', e.target.value)}
-                    />
+                        onChange=
+                        {
+                            (e) => handleNestedChange('video', 'title', e.target.value)
+                        } />
                     <TextField
                         label="Video URL"
                         size="small"
                         fullWidth
                         value={lesson.video?.url || ''}
-                        onChange={(e) => handleNestedChange('video', 'url', e.target.value)}
-                    />
+                        onChange=
+                        {
+                            (e) => handleNestedChange('video', 'url', e.target.value)
+                        } />
                 </div>
             )}
 
-            {lesson.lessonType === 'DOCUMENT' && (
-                <div className="p-3 bg-green-50 rounded-md space-y-2 border border-green-200">
-                    <Typography variant="caption">Document Content</Typography>
+            {lessonType === 'DOCUMENT' && (
+                <div className="p-3 bg-green-50/50 rounded-md space-y-2 border border-green-200">
+                    <Typography
+                        variant="caption"
+                        color="text.secondary">Document Content
+                    </Typography>
                     <TextField
                         label="Document Title"
                         size="small"
                         fullWidth
                         value={lesson.document?.title || ''}
-                        onChange={(e) =>
-                            handleNestedChange('document', 'title', e.target.value)
+                        onChange={
+                            (e) => handleNestedChange('document', 'title', e.target.value)
                         }
                     />
                     <TextField
                         label="Document Link"
                         size="small"
-                        fullWidth
-                        value={lesson.document?.link || ''}
-                        onChange={(e) =>
-                            handleNestedChange('document', 'link', e.target.value)
+                        fullWidth value={lesson.document?.link || ''}
+                        onChange={
+                            (e) => handleNestedChange('document', 'link', e.target.value)
                         }
                     />
                 </div>
             )}
 
-            {lesson.lessonType === 'QUIZ' && (
-                <div className="p-3 bg-gray-100 rounded-md space-y-2">
-                    <Typography variant="caption">
-                        Link an existing quiz (enter Quiz ID)
+            {lessonType === 'QUIZ' && (
+                <div className="p-3 bg-gray-100 rounded-md">
+                    <Typography
+                        variant="caption"
+                        color="text.secondary">Link an existing quiz:
                     </Typography>
                     <TextField
                         label="Quiz ID"
                         size="small"
-                        fullWidth
-                        type="number"
+                        fullWidth type="number"
                         value={lesson.quizId || ''}
                         onChange={(e) => handleChange('quizId', e.target.value)}
                     />
@@ -267,16 +282,18 @@ const LessonEditor = ({ lesson, onLessonChange, onRemove }) => {
 
 /* ---------- Section Editor ---------- */
 const SectionEditor = ({ section, onSectionChange, onRemoveSection }) => {
-    const handleTitleChange = (e) =>
+    const handleTitleChange = (e) => {
         onSectionChange({ ...section, title: e.target.value });
+    };
 
     const handleAddLesson = () => {
         const newLesson = {
             id: `new-${Date.now()}`,
             title: '',
-            type: 'VIDEO',
-            video: {},
-            document: {},
+            // ✅ FIX: Use 'lessonType' to be consistent with the backend and the editor component
+            lessonType: 'VIDEO',
+            video: { title: '', url: '' },
+            document: { title: '', link: '' },
             quizId: null,
         };
         onSectionChange({
@@ -285,19 +302,21 @@ const SectionEditor = ({ section, onSectionChange, onRemoveSection }) => {
         });
     };
 
-    const handleLessonChange = (updatedLesson) =>
+    const handleLessonChange = (updatedLesson) => {
         onSectionChange({
             ...section,
             lessons: (section.lessons || []).map((l) =>
                 l.id === updatedLesson.id ? updatedLesson : l
             ),
         });
+    };
 
-    const handleRemoveLesson = (lessonId) =>
+    const handleRemoveLesson = (lessonId) => {
         onSectionChange({
             ...section,
             lessons: (section.lessons || []).filter((l) => l.id !== lessonId),
         });
+    };
 
     return (
         <Accordion defaultExpanded className="mb-4 shadow-md bg-white">
@@ -323,7 +342,7 @@ const SectionEditor = ({ section, onSectionChange, onRemoveSection }) => {
                     </IconButton>
                 </div>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails className="bg-gray-50/50">
                 <div className="space-y-3">
                     {(section.lessons || []).map((lesson) => (
                         <LessonEditor
@@ -465,7 +484,7 @@ export const AdminProgramDetails = () => {
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen p-4 sm:p-8 pt-24">
+        <div className="w-full bg-gray-100 min-h-screen p-4 sm:p-8 mt-14">
             <Paper className="max-w-5xl mx-auto p-6 rounded-xl shadow-2xl">
                 <Typography variant="h4" className="font-bold mb-4">
                     {id ? `Editing: ${programData.title || ''}` : 'Create a New Program'}

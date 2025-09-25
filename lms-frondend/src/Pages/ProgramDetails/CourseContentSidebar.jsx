@@ -6,14 +6,8 @@ import { CheckCircle2 } from 'lucide-react';
 export const CourseContentSidebar = ({ program, selectedContent, onContentSelect, completedItems }) => {
 
     // Combine all content into a single array with a 'type' property
-    const allContentItems = [
-        ...(program.videos?.map(v => ({ ...v, type: 'video' })) || []),
-        ...(program.documents?.map(d => ({ ...d, type: 'document' })) || []),
-        ...(program.quizzes?.map(q => ({ ...q, type: 'quiz' })) || [])
-    ];
-
-    // Calculate progress based on the simulated 'completedItems' set
-    const progress = allContentItems.length > 0 ? (completedItems.size / allContentItems.length) * 100 : 0;
+    const allLessons = program.sections?.flatMap(section => section.lessons) || [];
+    const progress = allLessons.length > 0 ? (completedItems.size / allLessons.length) * 100 : 0;
 
     return (
         <Box className="h-full flex flex-col">
@@ -29,32 +23,35 @@ export const CourseContentSidebar = ({ program, selectedContent, onContentSelect
             </Box>
 
             <Box className="flex-grow overflow-y-auto">
-                <Accordion defaultExpanded>
-                    <AccordionSummary expandIcon={<ExpandMore />}>
-                        <Typography className="font-semibold">Course Content</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ p: 0 }}>
-                        <List dense>
-                            {allContentItems.map((item) => {
-                                const isSelected = selectedContent?.id === item.id && selectedContent?.type === item.type;
-                                const isCompleted = completedItems.has(`${item.type}-${item.id}`);
-                                const getIcon = () => {
-                                    if (item.type === 'video') return <PlayCircleOutline />;
-                                    if (item.type === 'document') return <DescriptionOutlined />;
-                                    if (item.type === 'quiz') return <CheckCircleOutlined />;
-                                };
-                                return (
-                                    <ListItemButton key={`${item.type}-${item.id}`} selected={isSelected} onClick={() => onContentSelect(item)}>
-                                        <ListItemIcon>
-                                            {isCompleted ? <CheckCircle2 size={20} className="text-green-500" /> : getIcon()}
-                                        </ListItemIcon>
-                                        <ListItemText primary={item.title} />
-                                    </ListItemButton>
-                                );
-                            })}
-                        </List>
-                    </AccordionDetails>
-                </Accordion>
+                {/* ✅ FIX: Map over the new hierarchical structure of sections and lessons */}
+                {(program.sections || []).map((section) => (
+                    <Accordion key={section.id} defaultExpanded>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                            <Typography className="font-semibold">{section.title}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ p: 0 }}>
+                            <List dense>
+                                {(section.lessons || []).map((lesson) => {
+                                    const isSelected = selectedContent?.id === lesson.id;
+                                    const isCompleted = completedItems.has(lesson.id);
+                                    const getIcon = () => {
+                                        if (lesson.lessonType === 'VIDEO') return <PlayCircleOutline />;
+                                        if (lesson.lessonType === 'DOCUMENT') return <DescriptionOutlined />;
+                                        if (lesson.lessonType === 'QUIZ') return <CheckCircleOutlined />;
+                                    };
+                                    return (
+                                        <ListItemButton key={lesson.id} selected={isSelected} onClick={() => onContentSelect(lesson)}>
+                                            <ListItemIcon>
+                                                {isCompleted ? <CheckCircle2 size={20} className="text-green-500" /> : getIcon()}
+                                            </ListItemIcon>
+                                            <ListItemText primary={lesson.title} />
+                                        </ListItemButton>
+                                    );
+                                })}
+                            </List>
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
             </Box>
         </Box>
     );
