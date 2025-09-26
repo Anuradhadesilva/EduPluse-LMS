@@ -13,7 +13,7 @@ export const Login = () => {
     const [isRegistering, setIsRegistering] = useState(false);
     const [formData, setFormData] = useState({ fullName: '', email: '', password: '' });
 
-    // Effect to clear any lingering errors when the modal opens
+
     useEffect(() => {
         if (isLoginModalOpen) {
             dispatch(clearAuthError());

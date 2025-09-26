@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Footer from "./components/footer/Footer"
 import { Home } from "./Pages/Home"
 import { Programs } from "./Pages/Programs"
-import { Details } from "./Pages/Details"
+// import { Details } from "./Pages/Details"
 import { Quiz } from "./Pages/Quiz"
-import { Entrolled } from "./Pages/Entrolled"
+import { EnrolledPrograms } from "./Pages/EntrolledPrograms"
 import { Admin } from "./Pages/Admin"
 import { AdminPrograms } from "./Pages/AdminPrograms"
 import { AdminProgramDetails } from "./Pages/AdminProgramDetails"
@@ -16,6 +16,8 @@ import { getUser } from "./state/Authentication/Action"
 import { Navbar } from "./components/nav/Navbar"
 import { Profile } from "./components/Login/Profile"
 import { Dashboard } from "./Pages/Dashboard"
+import { ProgramDetailsController } from "./Pages/ProgramDetails/ProgramDetailsController"
+import { ProgramBuilderPage } from "./Pages/AdminPrograms/ProgramBuilderPage"
 
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
   const role = auth.role || localStorage.getItem("role");
   useEffect(() => {
     dispatch(getUser(auth.jwt || jwt));
-  }, [auth.jwt]);
+  }, [dispatch, jwt, auth.jwt]);
   console.log(auth)
 
 
@@ -40,9 +42,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/programs" element={role === 'ROLE_ADMIN' ? <AdminPrograms /> : <Programs />} />
-          <Route path="/enrolled" element={role === 'ROLE_STUDENT' ? <Entrolled /> : <Navigate to="/" />} />
+          <Route path="/enrolled" element={role === 'ROLE_STUDENT' ? <EnrolledPrograms /> : <Navigate to="/" />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/programs/:id" element={role === 'ROLE_ADMIN' ? <AdminProgramDetails /> : <Details />} />
+          <Route path="/programs/:id" element={role === 'ROLE_ADMIN' ? <AdminProgramDetails /> : <ProgramDetailsController />} />
           <Route path="/quiz/:id" element={<Quiz />} />
           <Route path="/profile" element={<Profile />} />
           <Route path='/dashboard' element={<Dashboard />} />

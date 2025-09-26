@@ -1,239 +1,177 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
-import navItems from "../../constants/navbarData";
-import { FiBookOpen } from "react-icons/fi";
-import { AppContext } from "../../Contexts/AppContext";
-import { Login } from "../Login/Login";
-import { LuMenu } from "react-icons/lu";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import { Avatar, Button, Divider, MenuItem } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../state/Authentication/Action";
-import { blue } from "@mui/material/colors";
-import { Popover } from "@mui/material";
-import { Typography } from "@mui/material";
 
 
-const Navbar = () => {
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { PageTopBanner } from '../components/PageTop/PageTopBanner'
+import { AppContext } from '../Contexts/AppContext';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { enrollProgram, getEnrolledPrograms, getProgramById, unenrollProgram } from '../state/Program/Action';
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const { openLoginBar, showLogin, hideLogin } = useContext(AppContext);
+export const Details = () => {
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
-    const [isOpen, setIsOpen] = useState(false);
-
-    // const [openLoginBar, setOpenLoginBar] = useState(false);
-
-    const [isScrolled, setIsScrolled] = useState(false);
-
-    // const { role, setRole } = useContext(AppContext);
-
-    const location = useLocation(); // Get the current location
-
-    const toggleNavbar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const closeNavbar = () => {
-        setIsOpen(false);
-    };
-
+    const { id } = useParams();
+    // const [program, setProgram] = useState(null);
+    // const { programs, quizzes, enrollProgram, enrolled } = useContext(AppContext);
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { auth } = useSelector(store => store)
-    const handleLogout = () => {
-        dispatch(logout());
+
+    const jwt = localStorage.getItem("jwt");
+    const { openLoginBar, showLogin, hideLogin } = useContext(AppContext);
+    const { selectedProgram: program, isLoading, error, enrolled } = useSelector((store) => store.program)
+
+    // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || []
+    useEffect(() => {
+        if (id) {
+            dispatch(getProgramById(id));
+        }
+        if (jwt) {
+            dispatch(getEnrolledPrograms(jwt));
+        } else {
+            // ✅ clear Redux enrolled state when no jwt
+            dispatch({ type: "CLEAR_ENROLLED" });
+        }
+        window.scrollTo(0, 0);
+    }, [dispatch, id, jwt]);
+
+    const handleEnroll = () => {
+        if (!jwt) {
+            showLogin();
+            console.log("open login bar");
+            return;
+        }
+        console.log("📌 Enrolling with", { jwt, programId: program.id });
+        dispatch(enrollProgram(jwt, program.id))
     }
 
-    // Function to handle scroll event
-    const handleScroll = () => {
-        if (window.scrollY > 100) {
-            setIsScrolled(true);
-        } else {
-            setIsScrolled(false);
+    const handleUnenroll = () => {
+        if (!jwt) {
+            showLogin();
+            return;
         }
-    };
+        dispatch(unenrollProgram(jwt, program.id))
+    }
+    const isEnrolled = Array.isArray(enrolled) && enrolled.some(e => e.program.id === program.id);
 
-    // Adding event listener on mount and removing on unmount
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
+    console.log(isEnrolled)
+    console.log(enrolled);
+
+    // if (isLoading) {
+    //     return <div className="p-10 text-blue-600">Loading program...</div>;
+    // }
+
+    if (error) {
+        return <div className="p-10 text-red-600">Error: {error}</div>;
+    }
+
+    if (!program) {
+        return <div className="p-10 text-red-600">Program not found.</div>;
+    }
+
+
+    // const isEnrolled = enrolled.includes(Number(id));
+
 
     return (
-        <>
-            <nav className="bg-white shadow-md">
-                {/* Top navbar */}
-                <div
-                    id="navbar"
-                    className={`w-full h-[8ch] backdrop-blur-sm flex items-center justify-between md:px-4 sm:px-4 px-4 fixed top-0 transition-all ease-in-out duration-300 z-50 ${isScrolled ? "bg-sky-50/50 border-b border-neutral-200" : "bg-transparent"
-                        }`}
-                >
-                    {/* left: mobile menu button */}
-                    <div className="md:hidden">
-                        <button onClick={toggleNavbar} aria-label="Open menu">
-                            {!isOpen ? <LuMenu size={28} /> : <IoCloseCircleOutline size={28} />}
+        <div className='w-full min-h-screen flex-col space-y-5 pb-16'>
+            <PageTopBanner />
+            <button onClick={() => navigate(-1)} className='mb-4 text-blue-600 px-4 md:px-16 sm:px-10 underline cursor-pointer'>Back</button>
+
+            <div className="max-w-5xl mx-auto px-4 py-10 text-gray-800">
+                <div className="flex flex-col lg:flex-row items-start gap-8 mb-10">
+                    <img
+                        src={program.image}
+                        alt={program.title}
+                        className="w-full lg:w-1/2 h-64 object-cover rounded-xl shadow-md"
+                    />
+
+                    <div className="flex flex-col space-y-1">
+                        <h1 className="text-2xl font-bold text-gray-900 w-full">{program.title}</h1>
+                        <div className="text-gray-500 text-sm">
+                            <span className="mr-2">📁 {program.category}</span> |
+                            <span className="mx-2">📚 {program.lessons}</span> |
+                            <span className="mx-2">👨‍🎓 {program.students}</span> |
+                            <span className="mx-2">⏱ {program.duration}</span>
+                        </div>
+                        <button
+
+                            onClick={isEnrolled ? () => handleUnenroll() : () => handleEnroll()}
+                            className={`mt-4 px-4 py-2 rounded text-white ${isEnrolled ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                                }`}>
+                            {isEnrolled ? "Enrolled" : "Enroll"}
                         </button>
-                    </div>
 
-                    {/* brand */}
-                    <div className="flex items-center gap-2 md:pr-16 pr-0">
-                        <Link to="/" className="text-lg font-semibold text-sky-700 flex items-center gap-x-2">
-                            <FiBookOpen size={24} />
-                            EduPlus
-                        </Link>
+                        <div className="text-xl font-semibold text-blue-600">{program.price}</div>
+                        <p className="text-gray-600 leading-relaxed">
+                            This program offers in-depth content to help learners achieve mastery in their chosen field. You'll get access to structured video tutorials, resource documents, and quizzes to test your understanding.
+                        </p>
                     </div>
+                </div>
 
-                    {/* desktop menu + actions */}
-                    <div className="hidden md:flex flex-1 items-center justify-between">
-                        <ul className="flex items-center gap-4">
-                            {navItems.map((item) => (
-                                <li key={item.id}>
-                                    <Link
-                                        to={item.path}
-                                        className={`hover:text-sky-700 ease-in-out duration-300 ${location.pathname === item.path
-                                            ? "text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-sky-700 to-purple-700 font-semibold"
-                                            : "text-neutral-700"
-                                            }`}
+                {program.videos?.length > 0 && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-semibold mb-6">🎥 Video Tutorials</h2>
+                        <div className="space-y-8">
+                            {program.videos.map((video, i) => (
+                                <div key={i} className="flex flex-col gap-2">
+                                    <h3 className="font-semibold text-lg">{video.title}</h3>
+                                    <div className="aspect-w-16 aspect-h-9">
+                                        <iframe
+                                            className="w-full h-64 rounded-lg shadow-md"
+                                            src={video.url.includes("embed") ? video.url : video.url.replace("watch?v=", "embed/").replace("youtu.be/", "www.youtube.com/embed/")}
+                                            title={video.title}
+                                            frameBorder="0"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Documents */}
+                {program.documents?.length > 0 && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-semibold mb-6">📄 Documents</h2>
+                        <ul className="list-disc list-inside text-blue-700 space-y-2">
+                            {program.documents.map((doc, i) => (
+                                <li key={i}>
+                                    <a
+                                        href={doc.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:underline"
                                     >
-                                        {item.name}
+                                        {doc.title}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {program.quizzes?.length > 0 && (
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <h2 className="text-2xl font-semibold mb-4">📝 Related Quizzes</h2>
+                        <ul className="space-y-4">
+                            {program.quizzes.map((quiz) => (
+                                <li key={quiz.id} className="flex justify-between items-center border-b pb-2">
+                                    <span className="font-medium">{quiz.title}</span>
+                                    <Link
+                                        to={`/quiz/${quiz.id}`}
+                                        className="text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 inline-block"
+                                    >
+                                        Take Quiz
                                     </Link>
                                 </li>
                             ))}
                         </ul>
-
                     </div>
-                    <div className="flex items-center gap-4">
-                        {/* <button
-                            onClick={() => setRole(role === "admin" ? "user" : "admin")}
-                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-indigo-500 via-sky-700 to-purple-700"
-                        >
-                            {role === "admin" ? "User" : "Admin"}
-                        </button> */}
+                )}
+            </div>
 
-                        {/* {role === "admin" && (
-                            <Link
-                                to="/admin"
-                                className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                            >
-                                Admin Panel
-                            </Link>
-                        )} */}
-
-
-                        <button
-                            variant="outlined"
-                            href="#outlined-buttons"
-                            className="px-4 py-2 rounded-xl text-white bg-gradient-to-tr from-red-500 via-pink-600 to-purple-700"
-                            onClick={showLogin}
-                        >
-                            Login
-                        </button>
-
-                        <div className=''>
-                            {auth.user ? (
-                                <Avatar aria-describedby={id} onClick={handleClick} sx={{ bgcolor: 'white', color: blue[500] }}>
-                                    {auth.user?.fullName?.[0]?.toUpperCase() || ""}
-                                </Avatar>
-                            ) : <Avatar aria-describedby={id} onClick={handleClick} sx={{ bgcolor: 'white', color: blue[500] }}>
-
-                            </Avatar>}
-                            <Popover
-                                id={id}
-                                open={open}
-                                anchorEl={anchorEl}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                            >
-                                <Typography sx={{ p: 2 }}>
-                                    <div style={{ padding: "16px", minWidth: "220px" }}>
-                                        {/* Profile Info */}
-                                        <Typography variant="subtitle1" fontWeight="bold">
-                                            {auth.user?.fullName}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {auth.user?.email}
-                                        </Typography>
-
-                                        <Divider sx={{ my: 1 }} />
-
-                                        {/* Menu Items */}
-                                        <MenuItem onClick={() => { navigate("/profile"); handleClose(); }}>
-                                            View Profile
-                                        </MenuItem>
-                                        <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
-                                            Logout
-                                        </MenuItem>
-                                    </div>
-                                </Typography>
-                            </Popover>
-                        </div>
-
-                    </div>
-                </div>
-            </nav>
-
-            {/* Overlay (only on small screens when drawer open) */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black/40 z-40 md:hidden"
-                    onClick={closeNavbar}
-                    aria-hidden="true"
-                />
-            )}
-
-            {/* Mobile drawer (slides from left, 70% width on small screens) */}
-            <aside
-                className={`fixed md:hidden top-0 left-0 h-full w-[70%] max-w-[420px] bg-sky-50 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
-                aria-hidden={!isOpen}
-            >
-                <div className="flex items-center justify-between p-4 border-b">
-                    <Link to="/" onClick={closeNavbar} className="flex items-center gap-2 text-sky-700 font-semibold">
-                        <FiBookOpen size={20} />
-                        EduPlus
-                    </Link>
-                    <button onClick={closeNavbar} aria-label="Close menu">
-                        <IoCloseCircleOutline size={28} />
-                    </button>
-                </div>
-
-                <nav className="p-6 space-y-6">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.id}
-                            to={item.path}
-                            onClick={() => {
-                                closeNavbar();
-                            }}
-                            className={`block text-lg ${location.pathname === item.path ? "font-semibold text-indigo-700" : "text-neutral-700"
-                                }`}
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
-                </nav>
-            </aside>
-
-            {/* Login modal / drawer */}
-            <Login isOpen={openLoginBar} onClose={hideLogin} />
-        </>
+        </div>
     );
 };
 
-export default Navbar;

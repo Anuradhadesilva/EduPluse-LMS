@@ -20,6 +20,7 @@ export const Details = () => {
     const { openLoginBar, showLogin, hideLogin } = useContext(AppContext);
     const { selectedProgram: program, isLoading, error, enrolled } = useSelector((store) => store.program)
 
+    console.log(program)
     // const programQuizzes = quizzes.find(p => p.programTitle === program.title)?.quizzes || []
     useEffect(() => {
         if (id) {
