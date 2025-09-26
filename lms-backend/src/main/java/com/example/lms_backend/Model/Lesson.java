@@ -32,14 +32,14 @@ public class Lesson {
     @JoinColumn(name = "document_id", unique = true, nullable = true)
     private Document document;
 
-    @OneToOne
-    @JoinColumn(name = "quiz_id", unique = true, nullable = true)
-    private Quiz quiz;
+//    @OneToOne
+//    @JoinColumn(name = "quiz_id", unique = true, nullable = true)
+//    private Quiz quiz;
 
     public enum LessonType {
         VIDEO,
         DOCUMENT,
-        QUIZ
+//        QUIZ
     }
 }
 

@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { CircularProgress, Box } from '@mui/material';
-import { ProgramPlayer } from './ProgramPlayer';
+// import { ProgramPlayer } from './aditional/ProgramPlayer';
 import { getEnrolledPrograms, getProgramById } from '../../state/Program/Action';
-import { ProgramStorefront } from './ProgramStoreFront';
+import { ProgramStorefront } from './aditional/ProgramStorefront';
+import { ProfessionalPlayerPage } from './ProfessionalPlayerPage';
 
 export const ProgramDetailsController = () => {
     const { id } = useParams();
@@ -35,5 +36,5 @@ export const ProgramDetailsController = () => {
     const isEnrolled = enrolled.some(e => e.program.id === program.id);
 
     // If the user is enrolled, show the course player. Otherwise, show the storefront.
-    return isEnrolled ? <ProgramPlayer program={program} /> : <ProgramStorefront program={program} />;
+    return isEnrolled ? <ProfessionalPlayerPage program={program} /> : <ProgramStorefront program={program} />;
 };

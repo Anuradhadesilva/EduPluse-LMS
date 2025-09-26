@@ -39,7 +39,7 @@ public class CreateProgramRequest {
         // ✅ NEW: Explicit fields for each content type
         private VideoDTO video;      // For creating a new video
         private DocumentDTO document;  // For creating a new document
-        private Long quizId;       // For linking an existing quiz
+//        private Long quizId;       // For linking an existing quiz
     }
 }
 

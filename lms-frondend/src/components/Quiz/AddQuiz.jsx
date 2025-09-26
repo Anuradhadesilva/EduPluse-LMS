@@ -6,8 +6,10 @@ import { useDispatch } from 'react-redux';
 import { createQuiz } from '../../state/Quiz/Action';
 import quizData from '../../constants/quizData';
 import { getProgramById } from '../../state/Program/Action';
+import { Button, TextField, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Plus } from 'lucide-react';
 
-export const AddQuiz = ({ programId, programTitle, quizId }) => {
+export const AddQuiz = ({ programId, programTitle, onQuizCreated, onCancel }) => {
     const disptach = useDispatch();
     const jwt = localStorage.getItem("jwt");
     const [quizTitle, setQuizTitle] = useState('');
@@ -41,6 +43,10 @@ export const AddQuiz = ({ programId, programTitle, quizId }) => {
     };
 
     const handleCreateQuiz = async () => {
+        if (!quizTitle || questions.length === 0) {
+            alert("Please provide a title and at least one question.");
+            return;
+        }
         const newQuiz = {
             title: quizTitle,
             programId: programId,
@@ -48,8 +54,11 @@ export const AddQuiz = ({ programId, programTitle, quizId }) => {
         };
 
         try {
-            await disptach(createQuiz(jwt, newQuiz));
+            const createdQuiz = await disptach(createQuiz(jwt, newQuiz));
             await disptach(getProgramById(programId));
+            if (createdQuiz) {
+                onQuizCreated(createdQuiz); // Pass the new quiz back to the parent
+            }
             setQuizTitle('');
             setQuestions([]);
             console.log(programId);
@@ -88,105 +97,38 @@ export const AddQuiz = ({ programId, programTitle, quizId }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded shadow mt-6">
-            <h2 className="text-xl font-bold mb-4">Create Quiz for: {programTitle}</h2>
-            <input
-                className="border p-2 mb-4 w-full"
-                placeholder="Enter Quiz Title"
-                value={quizTitle}
-                onChange={e => setQuizTitle(e.target.value)}
-                required
-            />
+        <Paper className="p-6 mt-4 border-t" elevation={0}>
+            <Typography variant="h6" className="font-semibold mb-4">Create New Quiz</Typography>
+            <div className="space-y-4">
+                <TextField label="Quiz Title" fullWidth value={quizTitle} onChange={e => setQuizTitle(e.target.value)} />
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
-                <input
-                    className="border p-2"
-                    placeholder="Question"
-                    value={currentQ.question}
-                    onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })}
-                    required
-                />
-                <input
-                    className="border p-2"
-                    placeholder="Correct Answer"
-                    value={currentQ.correctAnswer}
-                    onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })}
-                    required
-                />
-                <input
-                    className="border p-2"
-                    placeholder="Option A"
-                    value={currentQ.optionA}
-                    onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })}
-                    required
-                />
-                <input
-                    className="border p-2"
-                    placeholder="Option B"
-                    value={currentQ.optionB}
-                    onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })}
-                    required
-                />
-                <input
-                    className="border p-2"
-                    placeholder="Option C"
-                    value={currentQ.optionC}
-                    onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })} required
-                />
-                <input
-                    className="border p-2"
-                    placeholder="Option D"
-                    value={currentQ.optionD}
-                    onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })}
-                    required
-                />
+                <Paper variant="outlined" className="p-4 space-y-3">
+                    <Typography>Add a New Question</Typography>
+                    <TextField label="Question Text" size="small" fullWidth value={currentQ.question} onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 ">
+                        <TextField label="Option A" size="small" value={currentQ.optionA} onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })} />
+                        <TextField label="Option B" size="small" value={currentQ.optionB} onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })} />
+                        <TextField label="Option C" size="small" value={currentQ.optionC} onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })} />
+                        <TextField label="Option D" size="small" value={currentQ.optionD} onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })} />
+                    </div>
+                    <TextField label="Correct Answer" size="small" fullWidth value={currentQ.correctAnswer} onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })} helperText="The text of the correct option (e.g., the text from Option A)." />
+                    <Button onClick={handleAddQuestion} variant="contained" startIcon={<Plus size={16} />}>Add Question to List</Button>
+                </Paper>
+
+                {questions.length > 0 && (
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead><TableRow><TableCell>#</TableCell><TableCell>Question</TableCell><TableCell>Correct Answer</TableCell></TableRow></TableHead>
+                            <TableBody>{questions.map((q, i) => (<TableRow key={q.id}><TableCell>{i + 1}</TableCell><TableCell>{q.question}</TableCell><TableCell>{q.correctAnswer}</TableCell></TableRow>))}</TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
+
+                <div className="flex gap-4">
+                    <Button variant="contained" color="primary" onClick={handleCreateQuiz} disabled={!quizTitle || questions.length === 0}>Save Quiz</Button>
+                    <Button variant="text" onClick={onCancel}>Cancel</Button>
+                </div>
             </div>
-
-            <button
-                className="bg-green-600 text-white px-4 py-2 rounded"
-                onClick={() => handleAddQuestion()}
-            >
-                ➕ Add Question
-            </button>
-
-            {questions.length > 0 && (
-                <>
-                    <h3 className="text-lg font-semibold mt-6 mb-2">📋 Added Questions</h3>
-                    <table className="w-full table-auto border">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="border px-2 py-1">#</th>
-                                <th className="border px-2 py-1">Question</th>
-                                <th className="border px-2 py-1">Correct</th>
-                                <th className="border px-2 py-1">A</th>
-                                <th className="border px-2 py-1">B</th>
-                                <th className="border px-2 py-1">C</th>
-                                <th className="border px-2 py-1">D</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {questions.map((q, i) => (
-                                <tr key={q.id}>
-                                    <td className="border px-2 py-1 text-center">{i + 1}</td>
-                                    <td className="border px-2 py-1">{q.question}</td>
-                                    <td className="border px-2 py-1">{q.correctAnswer}</td>
-                                    <td className="border px-2 py-1">{q.optionA}</td>
-                                    <td className="border px-2 py-1">{q.optionB}</td>
-                                    <td className="border px-2 py-1">{q.optionC}</td>
-                                    <td className="border px-2 py-1">{q.optionD}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    <button
-                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
-                        onClick={() => handleCreateQuiz()}
-                    >
-                        ✅ Save Quiz
-                    </button>
-                </>
-            )}
-        </div>
+        </Paper>
     );
 };

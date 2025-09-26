@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { PageTopBanner } from '../../components/PageTop/PageTopBanner';
+import { PageTopBanner } from '../../../components/PageTop/PageTopBanner';
 import { Paper, Typography, Button, Box, Divider } from '@mui/material';
 import { Book, Clock, Users, Video, FileText, CheckSquare } from 'lucide-react';
-import { enrollProgram } from '../../state/Program/Action';
-import { openLoginModal } from '../../state/UI/uiSlice';
+import { enrollProgram } from '../../../state/Program/Action';
+import { openLoginModal } from '../../../state/UI/uiSlice';
 
 export const ProgramStorefront = ({ program }) => {
     const dispatch = useDispatch();
@@ -48,10 +48,19 @@ export const ProgramStorefront = ({ program }) => {
                             <Typography variant="h4" className="font-bold mb-4">${program.price}</Typography>
                             <Button variant="contained" size="large" fullWidth onClick={handleEnroll}>Enroll Now</Button>
                             <Divider className="my-4" />
-                            <Typography variant="subtitle1" className="font-bold mb-2">Program Includes</Typography>
+                            <Typography
+                                variant="subtitle1"
+                                className="font-bold mb-2">
+                                Program Includes
+                            </Typography>
                             <ul className="space-y-2 text-gray-600">
-                                <li className="flex items-center gap-3"><Book size={18} /><span>{program.lessons} Lessons</span></li>
-                                <li className="flex items-center gap-3"><Clock size={18} /><span>{program.duration}</span></li>
+                                <li className="flex items-center gap-3">
+                                    <Book size={18} />
+                                    <span>{program.lessons} Lessons</span></li>
+                                <li
+                                    className="flex items-center gap-3">
+                                    <Clock size={18} /><span>{program.duration}</span>
+                                </li>
                                 <li className="flex items-center gap-3"><Users size={18} /><span>{program.students} Students Enrolled</span></li>
                             </ul>
                         </Paper>

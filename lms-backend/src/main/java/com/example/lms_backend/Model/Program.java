@@ -55,7 +55,9 @@ public class Program {
     @OrderBy("order ASC")
     private List<Section> sections = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Quiz> quizzes = new ArrayList<>();
     // --- Enums for structured data ---
     public enum SkillLevel {
         BEGINNER,

@@ -21,7 +21,7 @@ public class ProgramServiceImpl implements ProgramService {
     // Add repositories for new content types
     private final VideoRepository videoRepository;
     private final DocumentRepository documentRepository;
-    private final QuizRepository quizRepository;
+//    private final QuizRepository quizRepository;
 
     @Override
     @Transactional
@@ -54,17 +54,17 @@ public class ProgramServiceImpl implements ProgramService {
         // This includes content linked directly OR indirectly through lessons.
         List<Video> videosToDetach = videoRepository.findByProgramId(id);
         List<Document> documentsToDetach = documentRepository.findByProgramId(id);
-        List<Quiz> quizzesToDetach = quizRepository.findByProgramId(id);
+//        List<Quiz> quizzesToDetach = quizRepository.findByProgramId(id);
 
         // 2. Set their program reference to null to break the foreign key link.
         videosToDetach.forEach(video -> video.setProgram(null));
         documentsToDetach.forEach(doc -> doc.setProgram(null));
-        quizzesToDetach.forEach(quiz -> quiz.setProgram(null));
+//        quizzesToDetach.forEach(quiz -> quiz.setProgram(null));
 
         // 3. Save the changes to the content tables.
         videoRepository.saveAll(videosToDetach);
         documentRepository.saveAll(documentsToDetach);
-        quizRepository.saveAll(quizzesToDetach);
+//        quizRepository.saveAll(quizzesToDetach);
 
         // 4. Now it is safe to delete the program.
         // The cascading delete will handle removing the sections and lessons.
@@ -148,11 +148,7 @@ public class ProgramServiceImpl implements ProgramService {
                             documentRepository.save(doc); // Save the document to get an ID
                             lesson.setDocument(doc);
                             break;
-                        case QUIZ:
-                            if (lessonDto.getQuizId() == null) throw new IllegalArgumentException("A Quiz ID is required for a quiz lesson.");
-                            Quiz quiz = quizRepository.findById(lessonDto.getQuizId()).orElseThrow(() -> new RuntimeException("Quiz not found with ID: " + lessonDto.getQuizId()));
-                            lesson.setQuiz(quiz);
-                            break;
+
                     }
                     updatedLessons.add(lesson);
                 }

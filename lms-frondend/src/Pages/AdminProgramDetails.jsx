@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProgramById, createProgram, updateProgram } from '../state/Program/Action';
@@ -8,7 +8,11 @@ import {
     Accordion, AccordionSummary, AccordionDetails
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
-import { Plus, Trash2, PlusCircle } from 'lucide-react';
+import { Plus, Trash2, PlusCircle, Edit } from 'lucide-react';
+import { AddQuiz } from '../components/Quiz/AddQuiz';
+import { AppContext } from '../Contexts/AppContext';
+import { deleteQuiz } from '../state/Quiz/Action';
+import { UpdateQuiz } from '../components/Quiz/UpdateQuiz';
 
 const ProgramMetadataForm = ({ programData, setProgramData }) => {
     const handleChange = (e) =>
@@ -157,6 +161,102 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                 </Button>
             </div>
         </div>
+    );
+};
+
+export const QuizManager = ({ programData, setProgramData, jwt, showLogin }) => {
+    const [showAddQuizForm, setShowAddQuizForm] = useState(false);
+    const [editingQuizId, setEditingQuizId] = useState(null);
+    const dispatch = useDispatch();
+    const handleAddQuiz = (newQuiz) => {
+        // This function will be passed to AddQuiz to update the parent state
+        const quizWithTempId = { ...newQuiz, id: `new-${Date.now()}` };
+        setProgramData(prev => ({
+            ...prev,
+            quizzes: [...(prev.quizzes || []), quizWithTempId]
+        }));
+        setShowAddQuizForm(false);
+    };
+
+    const handleUpdateQuiz = (updatedQuiz) => {
+        setProgramData(prev => ({
+            ...prev,
+            quizzes: (prev.quizzes || []).map(q => q.id === updatedQuiz.id ? updatedQuiz : q)
+        }));
+        setEditingQuizId(null);
+    };
+
+    const handleDeleteQuiz = async (quizId) => {
+        // if (activeAdmin) {
+        //     showLogin()
+        //     console.log(showLogin);
+        // }
+        if (window.confirm('Are you sure you want to delete this quiz?')) {
+            try {
+                await dispatch(deleteQuiz(jwt, quizId));
+                await dispatch(getProgramById(programData.id));
+            } catch (err) {
+                console.error('❌ Failed to add quiz:', err);
+                alert('Failed to add quiz. See console for details.');
+            }
+            setProgramData(prev => ({
+                ...prev,
+                quizzes: (prev.quizzes || []).filter(q => q.id !== quizId)
+            }));
+        }
+    };
+
+
+    return (
+        <Paper className="p-6 space-y-4">
+            <Typography variant="h5" className="font-bold">Manage Program Quizzes</Typography>
+
+            <div className="space-y-3">
+                {(programData.quizzes || []).map(quiz => (
+                    <Paper key={quiz.id} className="p-4 flex justify-between items-center" variant="outlined">
+                        <Typography>{quiz.title}</Typography>
+                        <div>
+                            <IconButton color="primary" onClick={() => setEditingQuizId(quiz.id)}>
+                                <Edit size={18} />
+                            </IconButton>
+                            <IconButton color="error" onClick={() => handleDeleteQuiz(quiz.id)}>
+                                <Trash2 size={18} />
+                            </IconButton>
+                        </div>
+                    </Paper>
+                ))}
+            </div>
+
+            <div className="mt-4">
+                <Button
+                    variant="outlined"
+                    startIcon={<PlusCircle />}
+                    onClick={() => setShowAddQuizForm(prev => !prev)}
+                >
+                    {showAddQuizForm ? 'Cancel' : 'Add New Quiz'}
+                </Button>
+            </div>
+
+            {showAddQuizForm && (
+                <AddQuiz
+                    programId={programData.id}
+                    onQuizCreated={handleAddQuiz}
+                    programTitle={programData.title}
+                    onCancel={showAddQuizForm}
+                // Pass a callback to handle the new quiz
+                />
+            )}
+
+            {editingQuizId && (
+
+                <UpdateQuiz
+                    quizId={editingQuizId}
+                    onQuizUpdated={handleUpdateQuiz} // Pass a callback to handle the update
+                    onCancel={() => setEditingQuizId(null)}
+                    programId={programData.id}
+                />
+            )}
+        </Paper>
     );
 };
 
@@ -424,10 +524,14 @@ export const AdminProgramDetails = () => {
     const dispatch = useDispatch();
     const { selectedProgram, isLoading } = useSelector((state) => state.program);
     const jwt = localStorage.getItem('jwt');
+    const { showLogin } = useContext(AppContext);
 
     const [programData, setProgramData] = useState(null);
     const [activeStep, setActiveStep] = useState(0);
 
+    const steps = ['Program Details', 'Build Curriculum', 'Manage Quizzes'];
+    const handleNext = () => setActiveStep((prev) => prev + 1);
+    const handleBack = () => setActiveStep((prev) => prev - 1);
     useEffect(() => {
         if (id) dispatch(getProgramById(id));
         else {
@@ -491,7 +595,7 @@ export const AdminProgramDetails = () => {
                 </Typography>
 
                 <Stepper activeStep={activeStep} className="mb-8">
-                    {['Program Details', 'Build Curriculum'].map((label) => (
+                    {steps.map((label) => (
                         <Step key={label}>
                             <StepLabel>{label}</StepLabel>
                         </Step>
@@ -510,25 +614,28 @@ export const AdminProgramDetails = () => {
                         setProgramData={setProgramData}
                     />
                 )}
-
+                {activeStep === 2 &&
+                    <QuizManager
+                        programData={programData}
+                        setProgramData={setProgramData}
+                        jwt={jwt}
+                        showLogin={showLogin}
+                    />}
                 <div className="mt-8 flex justify-between">
                     <Button
                         disabled={activeStep === 0}
-                        onClick={() => setActiveStep((s) => s - 1)}
+                        onClick={handleBack}
                     >
                         Back
                     </Button>
-                    {activeStep === 1 ? (
-                        <Button variant="contained" color="primary" onClick={handleSave}>
-                            {id ? 'Save Changes' : 'Create Program'}
-                        </Button>
-                    ) : (
+                    {activeStep === steps.length - 1 ? (
                         <Button
                             variant="contained"
-                            onClick={() => setActiveStep((s) => s + 1)}
-                        >
-                            Next
-                        </Button>
+                            color="primary"
+                            onClick={handleSave}>
+                            {id ? 'Save Changes' : 'Create Program'}</Button>
+                    ) : (
+                        <Button variant="contained" onClick={handleNext}>Next</Button>
                     )}
                 </div>
             </Paper>
@@ -737,62 +844,62 @@ export const AdminProgramDetails = () => {
 //                 </button>
 
 //                 {/* Quizzes Section */}
-//                 <div className="mt-10">
-//                     <h2 className="text-xl font-semibold">Quizzes</h2>
-//                     <ul className="mt-2 space-y-2">
-//                         {(program.quizzes || []).map(quiz => (
-//                             <li
-//                                 key={quiz.id}
-//                                 className="border p-3 rounded flex flex-col gap-2"
+//     <div className="mt-10">
+//         <h2 className="text-xl font-semibold">Quizzes</h2>
+//         <ul className="mt-2 space-y-2">
+//             {(program.quizzes || []).map(quiz => (
+//                 <li
+//                     key={quiz.id}
+//                     className="border p-3 rounded flex flex-col gap-2"
+//                 >
+//                     <div className="flex justify-between items-center">
+//                         <span>{quiz.title}</span>
+//                         <div className="space-x-4">
+//                             <button
+//                                 className="text-blue-600 hover:underline"
+//                                 onClick={() =>
+//                                     setShowUpdateQuizForm((prev) => (prev === quiz.id ? null : quiz.id))
+//                                 }
 //                             >
-//                                 <div className="flex justify-between items-center">
-//                                     <span>{quiz.title}</span>
-//                                     <div className="space-x-4">
-//                                         <button
-//                                             className="text-blue-600 hover:underline"
-//                                             onClick={() =>
-//                                                 setShowUpdateQuizForm((prev) => (prev === quiz.id ? null : quiz.id))
-//                                             }
-//                                         >
-//                                             {showUpdateQuizForm === quiz.id ? "Close" : "Edit"}
-//                                         </button>
+//                                 {showUpdateQuizForm === quiz.id ? "Close" : "Edit"}
+//                             </button>
 
-//                                         <button
-//                                             onClick={() => handleDeleteQuiz(quiz.id)}
-//                                             className="text-red-600 hover:underline"
-//                                         >
-//                                             Delete
-//                                         </button>
-//                                     </div>
-//                                 </div>
-
-//                                 {/* Show UpdateQuiz directly below the clicked quiz */}
-//                                 {showUpdateQuizForm === quiz.id && (
-//                                     <div className="mt-3">
-//                                         <UpdateQuiz
-//                                             programId={program.id}
-//                                             programTitle={program.title}
-//                                             quizId={quiz.id}
-//                                         />
-//                                     </div>
-//                                 )}
-//                             </li>
-//                         ))}
-//                     </ul>
-//                     <div className="mt-4">
-//                         <button
-//                             onClick={() => setShowQuizForm(prev => !prev)}
-//                             className="bg-purple-600 text-white px-4 py-2 rounded"
-//                         >
-//                             {showQuizForm ? '✖ Cancel' : '➕ Add Quiz'}
-//                         </button>
-
-//                         {showQuizForm && (
-//                             <AddQuiz programId={program.id} programTitle={program.title} />
-//                         )}
+//                             <button
+//                                 onClick={() => handleDeleteQuiz(quiz.id)}
+//                                 className="text-red-600 hover:underline"
+//                             >
+//                                 Delete
+//                             </button>
+//                         </div>
 //                     </div>
-//                 </div>
-//             </div>
+
+//                     {/* Show UpdateQuiz directly below the clicked quiz */}
+//                     {showUpdateQuizForm === quiz.id && (
+//                         <div className="mt-3">
+//                             <UpdateQuiz
+//                                 programId={program.id}
+//                                 programTitle={program.title}
+//                                 quizId={quiz.id}
+//                             />
+//                         </div>
+//                     )}
+//                 </li>
+//             ))}
+//         </ul>
+//         <div className="mt-4">
+//             <button
+//                 onClick={() => setShowQuizForm(prev => !prev)}
+//                 className="bg-purple-600 text-white px-4 py-2 rounded"
+//             >
+//                 {showQuizForm ? '✖ Cancel' : '➕ Add Quiz'}
+//             </button>
+
+//             {showQuizForm && (
+//                 <AddQuiz programId={program.id} programTitle={program.title} />
+//             )}
+//         </div>
+//     </div>
+// </div>
 //         </div>
 //     );
 // };
