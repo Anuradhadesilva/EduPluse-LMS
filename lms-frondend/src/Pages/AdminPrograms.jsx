@@ -31,7 +31,7 @@ export const AdminPrograms = () => {
                     <Button
                         variant="contained"
                         startIcon={<PlusCircle />}
-                        onClick={() => navigate('/admin/program/create')}
+                        onClick={() => navigate('/program/create')}
                     >
                         Create New Program
                     </Button>

@@ -547,7 +547,11 @@ export const AdminProgramDetails = () => {
                 sections: [],
             });
         }
+
     }, [dispatch, id]);
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [activeStep]);
 
     useEffect(() => {
         if (selectedProgram && id) {
@@ -628,6 +632,7 @@ export const AdminProgramDetails = () => {
                     >
                         Back
                     </Button>
+
                     {activeStep === steps.length - 1 ? (
                         <Button
                             variant="contained"

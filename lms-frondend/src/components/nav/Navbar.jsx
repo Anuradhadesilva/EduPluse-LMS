@@ -21,6 +21,7 @@ export const Navbar = () => {
 
     const { auth } = useSelector(store => store);
 
+    console.log(auth.user);
     const handleOpenLoginModal = () => dispatch(openLoginModal());
     const handleLogout = () => {
         dispatch(logout());
@@ -60,9 +61,15 @@ export const Navbar = () => {
                 {/* Center Navigation */}
                 <div className="hidden md:flex flex-1 items-center justify-center">
                     <ul className="flex items-center gap-8">
-                        {navItems.map((item) => (
+                        {(navItems.filter(item => !(item.name === "Enrolled" && auth.user?.role === "ROLE_ADMIN"))).map((item) => (
                             <li key={item.id}>
-                                <Link to={item.path} className={`pb-1 border-b-2 transition-colors duration-300 ${location.pathname === item.path ? "text-blue-600 border-blue-600 font-semibold" : "text-gray-600 border-transparent hover:text-blue-600 hover:border-blue-300"}`}>
+                                <Link
+                                    to={item.path}
+                                    className={`pb-1 border-b-2 transition-colors duration-300 ${location.pathname === item.path
+                                        ? "text-blue-600 border-blue-600 font-semibold"
+                                        : "text-gray-600 border-transparent hover:text-blue-600 hover:border-blue-300"
+                                        }`}
+                                >
                                     {item.name}
                                 </Link>
                             </li>
@@ -74,24 +81,47 @@ export const Navbar = () => {
                 <div className="flex items-center gap-4">
                     {auth.user ? (
                         <>
-                            <Avatar onClick={handleOpenUserMenu} className="cursor-pointer bg-blue-600 text-white">
+                            <Avatar
+                                onClick={handleOpenUserMenu}
+                                className="cursor-pointer bg-blue-600 text-white">
                                 {auth.user.fullName[0].toUpperCase()}
                             </Avatar>
-                            <Popover open={isUserMenuOpen} anchorEl={anchorEl} onClose={handleCloseUserMenu} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+                            <Popover
+                                open={isUserMenuOpen}
+                                anchorEl={anchorEl}
+                                onClose={handleCloseUserMenu}
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                                 <div className="p-4 min-w-[240px]">
-                                    <Typography variant="subtitle1" fontWeight="bold">{auth.user.fullName}</Typography>
-                                    <Typography variant="body2" color="text.secondary">{auth.user.email}</Typography>
+                                    <Typography
+                                        variant="subtitle1"
+                                        fontWeight="bold">{auth.user.fullName}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary">{auth.user.email}
+                                    </Typography>
                                     <Divider sx={{ my: 1 }} />
                                     {/* ✅ --- LINK TO PROFILE PAGE --- */}
-                                    <MenuItem onClick={() => navigateTo("/profile")}>View Profile</MenuItem>
-                                    <MenuItem onClick={() => navigateTo("/dashboard")}>Dashboard</MenuItem>
-                                    {auth.role === 'ROLE_ADMIN' && <MenuItem onClick={() => navigateTo("/admin/programs")}>Admin Panel</MenuItem>}
+                                    <MenuItem
+                                        onClick={() => navigateTo("/profile")}>
+                                        View Profile
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => navigateTo("/dashboard")}>
+                                        Dashboard
+                                    </MenuItem>
+                                    {auth.role === 'ROLE_ADMIN' &&
+                                        <MenuItem onClick={() => navigateTo("/admin/programs")}>
+                                            Admin Panel
+                                        </MenuItem>}
                                     <MenuItem onClick={handleLogout} sx={{ color: "red" }}>Logout</MenuItem>
                                 </div>
                             </Popover>
                         </>
                     ) : (
-                        <button onClick={handleOpenLoginModal} className="px-4 py-2 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700 transition-colors">
+                        <button
+                            onClick={handleOpenLoginModal}
+                            className="px-4 py-2 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700 transition-colors">
                             Login
                         </button>
                     )}
