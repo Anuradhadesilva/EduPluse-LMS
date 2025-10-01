@@ -74,14 +74,17 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                     onChange={handleChange}
                     fullWidth
                 />
-                <TextField
-                    label="Price"
-                    name="price"
-                    type="number"
-                    value={programData.price || '0.00'}
-                    onChange={handleChange}
-                    fullWidth
-                />
+                <FormControl fullWidth>
+                    <InputLabel>Language</InputLabel>
+                    <Select
+                        name="language"
+                        value={programData.language || 'English'}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="ENGLSIH">English</MenuItem>
+                        <MenuItem value="SINHALA">Sinhala</MenuItem>
+                    </Select>
+                </FormControl>
                 <FormControl fullWidth>
                     <InputLabel>Skill Level</InputLabel>
                     <Select

@@ -5,6 +5,7 @@ import { getAllPrograms, deleteProgram } from '../state/Program/Action';
 import { Button, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, CircularProgress } from '@mui/material';
 import { Edit, Delete, PlusCircle } from 'lucide-react';
 import { PageTopBanner } from '../components/PageTop/PageTopBanner';
+import { PreLoader } from '../components/Loaders/Loader';
 
 export const AdminPrograms = () => {
     const navigate = useNavigate();
@@ -21,6 +22,14 @@ export const AdminPrograms = () => {
             dispatch(deleteProgram(jwt, programId));
         }
     };
+
+    // if (isLoading || !programs) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-screen">
+    //             <PreLoader />
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -45,13 +54,13 @@ export const AdminPrograms = () => {
                                     <TableCell className="font-bold">Title</TableCell>
                                     <TableCell className="font-bold">Category</TableCell>
                                     <TableCell className="font-bold">Status</TableCell>
-                                    <TableCell className="font-bold">Price</TableCell>
+                                    <TableCell className="font-bold">Language</TableCell>
                                     <TableCell align="right" className="font-bold">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {isLoading ? (
-                                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 5 }}><CircularProgress /></TableCell></TableRow>
+                                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 5 }}><PreLoader /></TableCell></TableRow>
                                 ) : (
                                     programs.map((program) => (
                                         <TableRow key={program.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -62,7 +71,7 @@ export const AdminPrograms = () => {
                                                     {program.status}
                                                 </span>
                                             </TableCell>
-                                            <TableCell>${program.price}</TableCell>
+                                            <TableCell>{program.language}</TableCell>
                                             <TableCell align="right">
                                                 <IconButton onClick={() => navigate(`/programs/${program.id}`)} color="primary" aria-label="edit">
                                                     <Edit size={20} />

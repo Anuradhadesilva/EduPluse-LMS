@@ -7,6 +7,7 @@ import { CircularProgress, Box } from '@mui/material';
 import { getEnrolledPrograms, getProgramById } from '../../state/Program/Action';
 import { ProgramStorefront } from './aditional/ProgramStorefront';
 import { ProfessionalPlayerPage } from './ProfessionalPlayerPage';
+import { PreLoader } from '../../components/Loaders/Loader';
 
 export const ProgramDetailsController = () => {
     const { id } = useParams();
@@ -32,7 +33,9 @@ export const ProgramDetailsController = () => {
             </Box>
         );
     }
-
+    if (isLoading) {
+        return <PreLoader />;
+    }
     const isEnrolled = enrolled.some(e => e.program.id === program.id);
 
     // If the user is enrolled, show the course player. Otherwise, show the storefront.

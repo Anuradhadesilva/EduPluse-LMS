@@ -9,6 +9,7 @@ import { TextField, Select, MenuItem, FormControl, InputLabel, Skeleton, Paginat
 import { Search } from 'lucide-react';
 import { ProgramCard } from '../components/Programs/ProgramCard';
 import { useDispatch, useSelector } from 'react-redux';
+import { PreLoader } from '../components/Loaders/Loader';
 
 const SKELETON_COUNT = 6;
 
@@ -72,6 +73,7 @@ export const Programs = () => {
     const pageCount = Math.ceil(filteredAndSortedPrograms.length / programsPerPage);
     const paginatedPrograms = filteredAndSortedPrograms.slice((currentPage - 1) * programsPerPage, currentPage * programsPerPage);
     const uniqueCategories = ["All", ...new Set(programs.map(p => p.category))];
+
 
     return (
         <div className="w-full min-h-screen bg-gray-50">
