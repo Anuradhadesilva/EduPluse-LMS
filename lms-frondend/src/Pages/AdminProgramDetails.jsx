@@ -13,6 +13,7 @@ import { AddQuiz } from '../components/Quiz/AddQuiz';
 import { AppContext } from '../Contexts/AppContext';
 import { deleteQuiz } from '../state/Quiz/Action';
 import { UpdateQuiz } from '../components/Quiz/UpdateQuiz';
+import { PreLoader } from '../components/Loaders/Loader';
 
 const ProgramMetadataForm = ({ programData, setProgramData }) => {
     const handleChange = (e) =>
@@ -589,7 +590,7 @@ export const AdminProgramDetails = () => {
     if (isLoading || !programData) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <CircularProgress />
+                <PreLoader />
             </div>
         );
     }
