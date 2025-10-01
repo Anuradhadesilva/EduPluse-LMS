@@ -18,6 +18,8 @@ import { Profile } from "./components/Login/Profile"
 import { Dashboard } from "./Pages/Dashboard"
 import { ProgramDetailsController } from "./Pages/ProgramDetails/ProgramDetailsController"
 import { ProgramBuilderPage } from "./Pages/AdminPrograms/ProgramBuilderPage"
+import { About } from "./Pages/About"
+import { Contact } from "./Pages/Contact"
 
 
 function App() {
@@ -51,6 +53,8 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/login' element={<Login />} />
           <Route path='/create-account' element={<SignUp />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
         </Routes>
         {/* Footer Section */}
         <Footer />

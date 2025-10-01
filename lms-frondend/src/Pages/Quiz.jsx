@@ -28,6 +28,7 @@ export const Quiz = () => {
         [jwt, dispatch]
     );
 
+    console.log(submissions);
     useEffect(() => {
         const isCurrentlyAttempting = submissions.filter(sub => sub.quiz?.id === parseInt(id)).length === 0;
         if (isCurrentlyAttempting && Object.keys(answers).length > 0 && quiz) {

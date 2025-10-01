@@ -6,6 +6,7 @@ import { getUserSubmissions } from '../state/Quiz/Action';
 import { Paper, Typography, Button, CircularProgress, Card, CardContent } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { BookOpen, CheckCircle, Users, ArrowRight } from 'lucide-react';
+import { PreLoader } from '../components/Loaders/Loader';
 
 // --- Student Dashboard Component ---
 const StudentDashboard = () => {
@@ -105,6 +106,13 @@ const AdminDashboard = () => {
         dispatch(getAllPrograms());
     }, [dispatch]);
     console.log()
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <PreLoader />
+            </div>
+        );
+    }
 
     // In a real app, this data would be fetched from dedicated API endpoints
     const chartData = [
@@ -170,6 +178,7 @@ export const Dashboard = () => {
             </div>
         );
     }
+
 
     const isAdmin = role === 'ROLE_ADMIN';
 
