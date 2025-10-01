@@ -1,6 +1,7 @@
 package com.example.lms_backend.Controller;
 
 import com.example.lms_backend.Model.QuizSubmission;
+import com.example.lms_backend.Model.SubmittedAnswer;
 import com.example.lms_backend.Service.QuizSubmissionService;
 import com.example.lms_backend.dto.QuizSubmissionRequest;
 import com.example.lms_backend.dto.QuizSubmissionResponse;
@@ -30,5 +31,15 @@ public class QuizSubmissionController {
     public ResponseEntity<List<QuizSubmission>> getQuizSubmissionByUser(@PathVariable Long userId) {
         List<QuizSubmission> quizSubmissions = quizSubmissionService.getSubmissionsByUserId(userId);
         return new ResponseEntity<>(quizSubmissions, HttpStatus.OK);
+    }
+    @GetMapping("/program/{programId}/answers")
+    public ResponseEntity<List<SubmittedAnswer>> getSubmittedAnswersByProgram(@PathVariable Long programId) {
+        List<SubmittedAnswer> answers = quizSubmissionService.getSubmissionsByProgramId(programId);
+        return ResponseEntity.ok(answers);
+    }
+    @GetMapping("/program/{programId}/submissions")
+    public ResponseEntity<List<QuizSubmission>> getSubmissionsByProgram(@PathVariable Long programId) {
+        List<QuizSubmission> submissions = quizSubmissionService.getSubmissionsDetailsByProgramId(programId);
+        return ResponseEntity.ok(submissions);
     }
 }
