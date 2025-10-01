@@ -17,6 +17,7 @@ export const registerUser = (reqData) => async (dispatch) => {
 
         dispatch({ type: REGISTER_SUCCESS, payload: data.jwt });
         console.log("register succcess", data);
+        reqData.navigate("/");
     } catch (error) {
         dispatch({ type: REGISTER_FAILURE, payload: error.response?.data?.message || error.message });
         console.log("error", error);

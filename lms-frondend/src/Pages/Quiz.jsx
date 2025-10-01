@@ -5,6 +5,8 @@ import { getQuizById, getUserSubmissions, submitQuiz, saveQuizProgress, getInPro
 import { QuizNavigation } from '../components/Quiz/QuizNavigation';
 import { QuizSummary } from '../components/Quiz/QuizSummary';
 import { debounce } from 'lodash';
+import { PreLoader } from '../components/Loaders/Loader';
+
 
 export const Quiz = () => {
     const { id } = useParams();
@@ -94,8 +96,13 @@ export const Quiz = () => {
     };
 
     // --- Render Logic ---
+
     if (isLoading || !quiz) {
-        return <div className="text-center mt-20">Loading...</div>;
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <PreLoader />
+            </div>
+        );
     }
 
     const attemptsForThisQuiz = submissions.filter(sub => sub.quiz?.id === parseInt(id));

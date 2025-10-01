@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { PlayerHeader } from './Playerheader';
 import { PlayerContentArea } from './PlayerContentArea';
 import { AttractiveSidebar } from './AttractiveSidebar';
+import { PreLoader } from '../../components/Loaders/Loader';
 
 
-export const ProfessionalPlayerPage = ({ program }) => {
+export const ProfessionalPlayerPage = ({ program, isLoading }) => {
     // State to manage the currently selected lesson from the sidebar
     const [selectedLesson, setSelectedLesson] = useState(null);
     // State to simulate which lessons have been completed
@@ -23,6 +24,10 @@ export const ProfessionalPlayerPage = ({ program }) => {
         setCompletedLessons(prev => new Set(prev).add(lesson.id));
     };
 
+
+    if (isLoading) {
+        return <PreLoader />;
+    }
     return (
         <div className=" text-white min-h-screen pt-20">
             <div className="flex flex-col lg:flex-row">

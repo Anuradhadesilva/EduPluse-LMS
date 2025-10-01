@@ -74,14 +74,17 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                     onChange={handleChange}
                     fullWidth
                 />
-                <TextField
-                    label="Price"
-                    name="price"
-                    type="number"
-                    value={programData.price || '0.00'}
-                    onChange={handleChange}
-                    fullWidth
-                />
+                <FormControl fullWidth>
+                    <InputLabel>Language</InputLabel>
+                    <Select
+                        name="language"
+                        value={programData.language || 'English'}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="ENGLSIH">English</MenuItem>
+                        <MenuItem value="SINHALA">Sinhala</MenuItem>
+                    </Select>
+                </FormControl>
                 <FormControl fullWidth>
                     <InputLabel>Skill Level</InputLabel>
                     <Select
@@ -547,7 +550,11 @@ export const AdminProgramDetails = () => {
                 sections: [],
             });
         }
+
     }, [dispatch, id]);
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [activeStep]);
 
     useEffect(() => {
         if (selectedProgram && id) {
@@ -628,6 +635,7 @@ export const AdminProgramDetails = () => {
                     >
                         Back
                     </Button>
+
                     {activeStep === steps.length - 1 ? (
                         <Button
                             variant="contained"

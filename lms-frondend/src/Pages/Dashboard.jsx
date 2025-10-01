@@ -10,7 +10,8 @@ import { BookOpen, CheckCircle, Users, ArrowRight } from 'lucide-react';
 // --- Student Dashboard Component ---
 const StudentDashboard = () => {
     const dispatch = useDispatch();
-    const { user, jwt } = useSelector(state => state.auth);
+    const jwt = localStorage.getItem("jwt")
+    const { user } = useSelector(state => state.auth);
     const { enrolled, isLoading: programsLoading } = useSelector(state => state.program);
     const { submissions, isLoading: submissionsLoading } = useSelector(state => state.quiz);
 
@@ -103,6 +104,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         dispatch(getAllPrograms());
     }, [dispatch]);
+    console.log()
 
     // In a real app, this data would be fetched from dedicated API endpoints
     const chartData = [
@@ -144,9 +146,9 @@ const AdminDashboard = () => {
                 {/* Quick Actions */}
                 <Paper className="p-6 shadow-md rounded-lg">
                     <Typography variant="h5" className="font-bold mb-4">Quick Actions</Typography>
-                    <div className="space-y-3">
-                        <Button component={Link} to="/admin/programs" variant="contained" fullWidth>Manage Programs</Button>
-                        <Button component={Link} to="/admin" variant="outlined" fullWidth>Create New Program</Button>
+                    <div className="flex flex-row gap-2">
+                        <Button component={Link} to="/programs" variant="contained" fullWidth>Manage Programs</Button>
+                        <Button component={Link} to="/program/create" variant="outlined" fullWidth>Create New Program</Button>
                     </div>
                 </Paper>
             </div>
@@ -157,8 +159,10 @@ const AdminDashboard = () => {
 
 // --- Main Dashboard Controller ---
 export const Dashboard = () => {
-    const { user, role } = useSelector((state) => state.auth);
+    const role = localStorage.getItem("role")
+    const { user } = useSelector((state) => state.auth);
 
+    console.log(role)
     if (!user) {
         return (
             <div className="flex justify-center items-center h-screen">

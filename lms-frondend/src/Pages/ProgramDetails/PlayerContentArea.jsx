@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Paper, Typography, Tabs, Tab, Button } from '@mui/material';
 import { CheckCircle, FileText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function TabPanel(props) {
     const { children, value, index } = props;
@@ -33,7 +33,8 @@ export const PlayerContentArea = ({ program, selectedLesson }) => {
                     </div>;
                 const embedUrl = video.url.includes("embed") ?
                     video.url : video.url.replace("watch?v=", "embed/");
-                return <iframe src={embedUrl} title={title} frameBorder="0" allowFullScreen className="w-full h-full"></iframe>;
+                console.log(embedUrl);
+                return <iframe src={video.url} title={title} frameBorder="0" allowFullScreen className="w-full h-full"></iframe>;
 
             case 'DOCUMENT':
                 return <div className="p-8 text-center flex flex-col items-center justify-center h-full">
@@ -66,7 +67,7 @@ export const PlayerContentArea = ({ program, selectedLesson }) => {
                 <Box sx={{ borderBottom: 1, borderColor: 'rgba(255, 255, 255, 0.12)' }}>
                     <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} textColor="inherit" indicatorColor="primary">
                         <Tab label="Overview" />
-                        <Tab label="Notes" />
+                        <Tab label="Quizzes" />
                         <Tab label="Announcements" />
                     </Tabs>
                 </Box>
@@ -94,7 +95,28 @@ export const PlayerContentArea = ({ program, selectedLesson }) => {
                         </div>
                     </div>
                 </TabPanel>
-                <TabPanel value={tabIndex} index={1}><Typography>Note-taking feature coming soon.</Typography></TabPanel>
+                <TabPanel value={tabIndex} index={1}>
+                    <Typography>
+                        {program.quizzes?.length > 0 && (
+                            <div className="bg-white shadow-md rounded-lg p-6">
+                                <h2 className="text-2xl font-semibold mb-4">📝 Related Quizzes</h2>
+                                <ul className="space-y-4">
+                                    {program.quizzes.map((quiz) => (
+                                        <li key={quiz.id} className="flex justify-between items-center border-b pb-2">
+                                            <span className="font-medium">{quiz.title}</span>
+                                            <Link
+                                                to={`/quiz/${quiz.id}`}
+                                                className="text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 inline-block"
+                                            >
+                                                Take Quiz
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </Typography>
+                </TabPanel>
                 <TabPanel value={tabIndex} index={2}><Typography>No announcements yet.</Typography></TabPanel>
             </Paper>
         </div>

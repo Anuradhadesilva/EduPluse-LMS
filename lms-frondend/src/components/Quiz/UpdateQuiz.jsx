@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { Save, X, Plus, Trash2, Edit3 } from 'lucide-react';
 
-onClick = { onCancel }   // ✅ will close UpdateQuiz in QuizManager
 export const UpdateQuiz = ({ programId, onQuizUpdated, quizId, onCancel }) => {
     const { id } = useParams();
     const dispatch = useDispatch();
@@ -225,12 +224,20 @@ export const UpdateQuiz = ({ programId, onQuizUpdated, quizId, onCancel }) => {
                     Update Quiz
                 </Button>
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     color="secondary"
-                    onClick={onCancel}   // ✅ will close UpdateQuiz in QuizManager
-                    startIcon={<X size={16} />}
-                >
-                    Cancel Editing
+                    onClick={() => {
+                        onCancel();
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        })
+                    }
+                    }
+                    startIcon={<X size={16}
+                    />}>
+                    Cancel Edit
+
                 </Button>
             </div>
         </div>

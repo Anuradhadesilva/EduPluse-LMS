@@ -12,16 +12,25 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
 
     const { id, image, category, rating, title, lessons, duration, price } = program;
 
+    const gradientColors = [
+        'from-purple-500 via-pink-500 to-indigo-500',
+        'from-green-400 via-blue-400 to-purple-500',
+        'from-yellow-400 via-red-400 to-pink-500',
+        'from-indigo-500 via-purple-500 to-pink-500',
+    ];
+    const randomGradient = gradientColors[id % gradientColors.length];
+
     return (
-        <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col group transform hover:-translate-y-1 transition-transform duration-300">
-            <div className="relative">
-                <img src={image || 'https://via.placeholder.com/400x200'} alt={title} className="w-full h-48 object-cover" />
-                <div className="absolute top-3 right-3 bg-white/90 text-yellow-500 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1">
-                    <Star size={14} /> {rating}
-                </div>
+        <div className="rounded-xl shadow-lg overflow-hidden h-full flex flex-col group transform hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
+
+            {/* Gradient placeholder for image */}
+            <div className={`h-40 w-full ${randomGradient} bg-gradient-to-br flex items-center justify-center`}>
+                <span className="text-white text-3xl font-bold uppercase">
+                    {title.slice(0, 4)}
+                </span>
             </div>
 
-            <div className="p-5 flex flex-col flex-grow">
+            <div className="p-5 flex flex-col flex-grow bg-white">
                 <span className="text-sm font-semibold text-blue-600 mb-1">{category}</span>
                 <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors flex-grow">
                     <Link to={`/programs/${id}`}>{title}</Link>
@@ -42,7 +51,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
                             size="small"
                             endIcon={<ArrowRight size={16} />}
                         >
-                            View Program
+                            View
                         </Button>
                     ) : (
                         <Button
@@ -50,10 +59,11 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
                             size="small"
                             onClick={onEnroll}
                         >
-                            Enroll Now
+                            Enroll
                         </Button>
                     )}
                 </div>
+
             </div>
         </div>
     );

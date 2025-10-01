@@ -46,6 +46,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/programs/:id" element={role === 'ROLE_ADMIN' ? <AdminProgramDetails /> : <ProgramDetailsController />} />
           <Route path="/quiz/:id" element={<Quiz />} />
+          <Route path="/program/create" element={<AdminProgramDetails />} />
           <Route path="/profile" element={<Profile />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/login' element={<Login />} />
