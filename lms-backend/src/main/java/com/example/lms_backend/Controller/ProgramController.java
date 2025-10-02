@@ -5,6 +5,7 @@ import com.example.lms_backend.Repo.ProgramRepository;
 import com.example.lms_backend.Service.ProgramService;
 import com.example.lms_backend.Service.QuizService;
 import com.example.lms_backend.dto.CreateProgramRequest;
+import com.example.lms_backend.dto.ProgramDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ProgramController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Program>> getAllPrograms() {
+    public ResponseEntity<List<ProgramDTO>> getAllPrograms() {
         return ResponseEntity.ok(programService.getAllPrograms());
     }
 

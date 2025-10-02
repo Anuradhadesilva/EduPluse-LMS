@@ -6,7 +6,7 @@ const initialState = {
     programs: [],
     enrolled: [],
     selectedProgram: {},
-    students: [],
+    enrollStudents: [],
     isLoading: false,
     error: null,
     success: null
@@ -84,7 +84,7 @@ export const programReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                students: action.payload
+                enrollStudents: action.payload
             };
 
         case GET_PROGRAMS_FAILURE:

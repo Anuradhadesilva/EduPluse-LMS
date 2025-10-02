@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllPrograms, getEnrolledPrograms } from '../state/Program/Action';
+import { getAllPrograms, getEnrolledPrograms, getStudentsByProgram } from '../state/Program/Action';
 import { getSubmissionsDetailsByProgramId, getUserSubmissions } from '../state/Quiz/Action';
 import { Paper, Typography, Button, CircularProgress, Card, CardContent } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { BookOpen, CheckCircle, Users, ArrowRight } from 'lucide-react';
 import { PreLoader } from '../components/Loaders/Loader';
+import { getAllStudents } from '../state/Authentication/Action';
+import { at } from 'lodash';
 
 // --- Student Dashboard Component ---
 const StudentDashboard = () => {
@@ -100,8 +102,10 @@ const StudentDashboard = () => {
 // --- Admin Dashboard Component ---
 const AdminDashboard = () => {
     const dispatch = useDispatch();
-    const { programs, loading: programsLoading } = useSelector(state => state.program);
+    const jwt = localStorage.getItem("jwt");
+    const { programs, enrollStudents, loading: programsLoading } = useSelector(state => state.program);
     const { programSubmissions, isLoading: submissionsLoading } = useSelector(state => state.quiz);
+    const { students, isLoading: studentsloading } = useSelector(state => state.auth);
 
     // We will assume you have a way to get all students, for now, we'll use a placeholder
     // In a real app, you would create a Redux action to fetch all students
@@ -110,8 +114,10 @@ const AdminDashboard = () => {
     // Fetch programs, and then fetch submissions for each program
     useEffect(() => {
         dispatch(getAllPrograms());
-    }, [dispatch]);
+        dispatch(getAllStudents(jwt));
+    }, [dispatch, jwt]);
 
+    console.log(students)
     useEffect(() => {
         // Once programs are loaded, fetch submissions for each one
         if (programs.length > 0) {
@@ -123,12 +129,24 @@ const AdminDashboard = () => {
 
 
     console.log(programs);
+    const dashboardStats = useMemo(() => {
+        const activePrograms = programs.filter(p => p.status === 'PUBLISHED').length
+        const topPrograms = [...programs]
+            .sort((a, b) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
+            .slice(0, 5);
+        return { activePrograms, topPrograms };
+    }, [programs])
     // Memoize chart data calculation to prevent re-rendering
     const chartData = useMemo(() => {
         const months = Array(6).fill(0).map((_, i) => {
             const d = new Date();
             d.setMonth(d.getMonth() - i);
-            return { name: d.toLocaleString('default', { month: 'short' }), submissions: 0, year: d.getFullYear(), month: d.getMonth() };
+            return {
+                name: d.toLocaleString('default', { month: 'short' }),
+                submissions: 0,
+                year: d.getFullYear(),
+                month: d.getMonth()
+            };
         }).reverse();
 
         programSubmissions.forEach(submission => {
@@ -145,7 +163,7 @@ const AdminDashboard = () => {
         return months;
     }, [programSubmissions]);
 
-    if (programsLoading || submissionsLoading) {
+    if (programsLoading || submissionsLoading || studentsloading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <PreLoader />
@@ -160,7 +178,7 @@ const AdminDashboard = () => {
                     <CardContent className="p-6 bg-red-600 text-white">
                         <Users size={32} />
                         <Typography variant="h3" className="font-bold mt-4">
-                            {totalStudents}
+                            {students.length}
                         </Typography>
                         <Typography>Total Students</Typography>
                     </CardContent>

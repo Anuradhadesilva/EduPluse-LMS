@@ -16,6 +16,7 @@ public class CreateProgramRequest {
     private String subcategory;
     private BigDecimal price;
     private String imageUrl;
+    private Program.ProgramStatus status;
     private Program.SkillLevel skillLevel;
     private List<String> learningObjectives;
     private List<String> prerequisites;
