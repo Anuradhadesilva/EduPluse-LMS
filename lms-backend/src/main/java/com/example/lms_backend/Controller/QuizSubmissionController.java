@@ -37,7 +37,7 @@ public class QuizSubmissionController {
         List<SubmittedAnswer> answers = quizSubmissionService.getSubmissionsByProgramId(programId);
         return ResponseEntity.ok(answers);
     }
-    @GetMapping("/program/{programId}/submissions")
+    @GetMapping("/program/{programId}")
     public ResponseEntity<List<QuizSubmission>> getSubmissionsByProgram(@PathVariable Long programId) {
         List<QuizSubmission> submissions = quizSubmissionService.getSubmissionsDetailsByProgramId(programId);
         return ResponseEntity.ok(submissions);

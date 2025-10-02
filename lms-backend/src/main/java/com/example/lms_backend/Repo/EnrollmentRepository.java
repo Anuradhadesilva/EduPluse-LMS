@@ -14,4 +14,5 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     boolean existsByUserIdAndProgramId(Long userId, Long programId);
     @Transactional
     void deleteByUserIdAndProgramId(Long userId, Long programId);
+    long countByProgramId(Long programId);
 }

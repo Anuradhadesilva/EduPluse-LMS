@@ -3,6 +3,7 @@ package com.example.lms_backend.Service;
 import com.example.lms_backend.Model.*;
 import com.example.lms_backend.Repo.*;
 import com.example.lms_backend.dto.CreateProgramRequest;
+import com.example.lms_backend.dto.ProgramDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class ProgramServiceImpl implements ProgramService {
     // Add repositories for new content types
     private final VideoRepository videoRepository;
     private final DocumentRepository documentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 //    private final QuizRepository quizRepository;
 
     @Override
@@ -32,8 +34,31 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<Program> getAllPrograms() {
-        return programRepository.findAll();
+    public List<ProgramDTO> getAllPrograms() {
+        List<Program> programs = programRepository.findAll();
+
+        return programs.stream().map(program -> {
+            ProgramDTO dto = new ProgramDTO();
+            // Map all existing fields...
+            dto.setId(program.getId());
+            dto.setTitle(program.getTitle());
+            dto.setSubtitle(program.getSubtitle());
+            dto.setDescription(program.getDescription());
+            dto.setLanguage(program.getLanguage());
+            dto.setCategory(program.getCategory());
+            dto.setSubcategory(program.getSubcategory());
+            dto.setImageUrl(program.getImageUrl());
+            dto.setSkillLevel(program.getSkillLevel());
+            dto.setStatus(program.getStatus());
+            dto.setLearningObjectives(program.getLearningObjectives());
+            dto.setPrerequisites(program.getPrerequisites());
+
+            // ✅ Use the new, highly efficient count method
+            long count = enrollmentRepository.countByProgramId(program.getId());
+            dto.setEnrollmentCount((int) count);
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -92,7 +117,7 @@ public class ProgramServiceImpl implements ProgramService {
         program.setSkillLevel(request.getSkillLevel());
         program.setLearningObjectives(request.getLearningObjectives());
         program.setPrerequisites(request.getPrerequisites());
-        program.setStatus(Program.ProgramStatus.DRAFT); // Default status
+        program.setStatus(request.getStatus()); // Default status
 
         // Hierarchical Content Update Logic
         if (request.getSections() == null) {

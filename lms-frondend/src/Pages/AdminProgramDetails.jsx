@@ -57,17 +57,19 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                 />
             </div>
 
-            <TextField
-                label="Description"
-                name="description"
-                value={programData.description || ''}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={4}
-            />
+            <div className='gap-2'>
+                <TextField
+                    label="Description"
+                    name="description"
+                    value={programData.description || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    multiline
+                    rows={4}
+                />
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <TextField
                     label="Category"
                     name="category"
@@ -78,6 +80,7 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                 <FormControl fullWidth>
                     <InputLabel>Language</InputLabel>
                     <Select
+                        label="Language"
                         name="language"
                         value={programData.language || 'English'}
                         onChange={handleChange}
@@ -87,8 +90,22 @@ const ProgramMetadataForm = ({ programData, setProgramData }) => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth>
+                    <InputLabel>Program Status</InputLabel>
+                    <Select
+                        label="Status"
+                        name="status"
+                        value={programData.status || 'DRAFT'}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="DRAFT">DRAFT</MenuItem>
+                        <MenuItem value="PUBLISHED">PUBLISHED</MenuItem>
+                        <MenuItem value="ARCHIVED">ARCHIVED</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth>
                     <InputLabel>Skill Level</InputLabel>
                     <Select
+                        label="Skill Level"
                         name="skillLevel"
                         value={programData.skillLevel || 'BEGINNER'}
                         onChange={handleChange}

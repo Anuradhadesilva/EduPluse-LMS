@@ -30,12 +30,20 @@ import {
     SAVE_QUIZ_PROGRESS_SUCCESS,
     GET_IN_PROGRESS_ATTEMPT_FAILURE,
     SAVE_QUIZ_PROGRESS_FAILURE,
+    GET_SUBMISSIONS_BY_PROGRAM_SUCCESS,
+    GET_SUBMISSIONS_DETAILS_BY_PROGRAM_SUCCESS,
+    GET_SUBMISSIONS_DETAILS_BY_PROGRAM_REQUEST,
+    GET_SUBMISSIONS_BY_PROGRAM_REQUEST,
+    GET_SUBMISSIONS_BY_PROGRAM_FAILURE,
+    GET_SUBMISSIONS_DETAILS_BY_PROGRAM_FAILURE,
 } from "./ActionType";
 
 const initialState = {
     quizzes: [],
     selectedQuiz: null,
     submissions: [],
+    programSubmissions: [],
+    submissionAnswers: [],
     submissionResult: null,
     inProgressAttempt: null, // ✅ To store saved progress
     isLoading: false,
@@ -55,6 +63,8 @@ export const quizReducer = (state = initialState, action) => {
         case SUBMIT_QUIZ_REQUEST:
         case GET_SUBMISSIONS_BY_USER_REQUEST:
         case GET_IN_PROGRESS_ATTEMPT_REQUEST: // Add to loading group
+        case GET_SUBMISSIONS_BY_PROGRAM_REQUEST: // Add this
+        case GET_SUBMISSIONS_DETAILS_BY_PROGRAM_REQUEST:
             return {
                 ...state,
                 isLoading: true,
@@ -137,8 +147,20 @@ export const quizReducer = (state = initialState, action) => {
         case SAVE_QUIZ_PROGRESS_SUCCESS:
             return {
                 ...state,
-                isSaving: false,
+                isLoading: false,
             };
+        case GET_SUBMISSIONS_BY_PROGRAM_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                submissionAnswers: action.payload
+            }
+        case GET_SUBMISSIONS_DETAILS_BY_PROGRAM_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                programSubmissions: action.payload
+            }
 
         case CREATE_QUIZ_FAILURE:
         case UPDATE_QUIZ_FAILURE:
@@ -150,6 +172,8 @@ export const quizReducer = (state = initialState, action) => {
         case DELETE_QUIZ_FAILURE:
         case GET_IN_PROGRESS_ATTEMPT_FAILURE:
         case SAVE_QUIZ_PROGRESS_FAILURE:
+        case GET_SUBMISSIONS_BY_PROGRAM_FAILURE:
+        case GET_SUBMISSIONS_DETAILS_BY_PROGRAM_FAILURE:
             return { ...state, isLoading: false, error: action.payload };
         case LOGOUT:
             return initialState;

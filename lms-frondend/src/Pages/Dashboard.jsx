@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllPrograms, getEnrolledPrograms } from '../state/Program/Action';
-import { getUserSubmissions } from '../state/Quiz/Action';
+import { getAllPrograms, getEnrolledPrograms, getStudentsByProgram } from '../state/Program/Action';
+import { getSubmissionsDetailsByProgramId, getUserSubmissions } from '../state/Quiz/Action';
 import { Paper, Typography, Button, CircularProgress, Card, CardContent } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { BookOpen, CheckCircle, Users, ArrowRight } from 'lucide-react';
 import { PreLoader } from '../components/Loaders/Loader';
+import { getAllStudents } from '../state/Authentication/Action';
+import { at } from 'lodash';
 
 // --- Student Dashboard Component ---
 const StudentDashboard = () => {
@@ -100,13 +102,68 @@ const StudentDashboard = () => {
 // --- Admin Dashboard Component ---
 const AdminDashboard = () => {
     const dispatch = useDispatch();
-    const { programs, isLoading } = useSelector(state => state.program);
+    const jwt = localStorage.getItem("jwt");
+    const { programs, enrollStudents, loading: programsLoading } = useSelector(state => state.program);
+    const { programSubmissions, isLoading: submissionsLoading } = useSelector(state => state.quiz);
+    const { students, isLoading: studentsloading } = useSelector(state => state.auth);
 
+    // We will assume you have a way to get all students, for now, we'll use a placeholder
+    // In a real app, you would create a Redux action to fetch all students
+    const totalStudents = 125; // Placeholder
+
+    // Fetch programs, and then fetch submissions for each program
     useEffect(() => {
         dispatch(getAllPrograms());
-    }, [dispatch]);
-    console.log()
-    if (isLoading) {
+        dispatch(getAllStudents(jwt));
+    }, [dispatch, jwt]);
+
+    console.log(students)
+    useEffect(() => {
+        // Once programs are loaded, fetch submissions for each one
+        if (programs.length > 0) {
+            programs.forEach(program => {
+                dispatch(getSubmissionsDetailsByProgramId(program.id));
+            });
+        }
+    }, [programs, dispatch]);
+
+
+    console.log(programs);
+    const dashboardStats = useMemo(() => {
+        const activePrograms = programs.filter(p => p.status === 'PUBLISHED').length
+        const topPrograms = [...programs]
+            .sort((a, b) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
+            .slice(0, 5);
+        return { activePrograms, topPrograms };
+    }, [programs])
+    // Memoize chart data calculation to prevent re-rendering
+    const chartData = useMemo(() => {
+        const months = Array(6).fill(0).map((_, i) => {
+            const d = new Date();
+            d.setMonth(d.getMonth() - i);
+            return {
+                name: d.toLocaleString('default', { month: 'short' }),
+                submissions: 0,
+                year: d.getFullYear(),
+                month: d.getMonth()
+            };
+        }).reverse();
+
+        programSubmissions.forEach(submission => {
+            const submissionDate = new Date(submission.submittedAt);
+            const submissionMonth = submissionDate.getMonth();
+            const submissionYear = submissionDate.getFullYear();
+
+            const monthData = months.find(m => m.month === submissionMonth && m.year === submissionYear);
+            if (monthData) {
+                monthData.submissions++;
+            }
+        });
+
+        return months;
+    }, [programSubmissions]);
+
+    if (programsLoading || submissionsLoading || studentsloading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <PreLoader />
@@ -114,30 +171,42 @@ const AdminDashboard = () => {
         );
     }
 
-    // In a real app, this data would be fetched from dedicated API endpoints
-    const chartData = [
-        { name: 'Jan', enrollments: 30 },
-        { name: 'Feb', enrollments: 45 },
-        { name: 'Mar', enrollments: 60 },
-        { name: 'Apr', enrollments: 50 },
-        { name: 'May', enrollments: 70 },
-        { name: 'Jun', enrollments: 90 },
-    ];
-    const totalStudents = 125;
-    const totalSubmissions = 450;
-
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="shadow-lg"><CardContent className="p-6 bg-red-600 text-white"><Users size={32} /><Typography variant="h3" className="font-bold mt-4">{totalStudents}</Typography><Typography>Total Students</Typography></CardContent></Card>
-                <Card className="shadow-lg"><CardContent className="p-6 bg-yellow-600 text-white"><BookOpen size={32} /><Typography variant="h3" className="font-bold mt-4">{programs.length}</Typography><Typography>Total Programs</Typography></CardContent></Card>
-                <Card className="shadow-lg"><CardContent className="p-6 bg-purple-600 text-white"><CheckCircle size={32} /><Typography variant="h3" className="font-bold mt-4">{totalSubmissions}</Typography><Typography>Quiz Submissions</Typography></CardContent></Card>
+                <Card className="shadow-lg">
+                    <CardContent className="p-6 bg-red-600 text-white">
+                        <Users size={32} />
+                        <Typography variant="h3" className="font-bold mt-4">
+                            {students.length}
+                        </Typography>
+                        <Typography>Total Students</Typography>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-lg">
+                    <CardContent className="p-6 bg-yellow-600 text-white">
+                        <BookOpen size={32} />
+                        <Typography variant="h3" className="font-bold mt-4">
+                            {programs.length}
+                        </Typography>
+                        <Typography>Total Programs</Typography>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-lg">
+                    <CardContent className="p-6 bg-purple-600 text-white">
+                        <CheckCircle size={32} />
+                        <Typography variant="h3" className="font-bold mt-4">{programSubmissions.length}</Typography>
+                        <Typography>Quiz Submissions</Typography>
+                    </CardContent>
+                </Card>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Platform Analytics Chart */}
                 <Paper className="p-6 shadow-md rounded-lg xl:col-span-2">
-                    <Typography variant="h5" className="font-bold mb-4">New Enrollments (Last 6 Months)</Typography>
+                    <Typography
+                        variant="h5"
+                        className="font-bold mb-4">Quiz Submissions (Last 6 Months)</Typography>
                     <div style={{ width: '100%', height: 300 }}>
                         <ResponsiveContainer>
                             <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
@@ -145,7 +214,7 @@ const AdminDashboard = () => {
                                 <XAxis dataKey="name" />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="enrollments" fill="#3b82f6" />
+                                <Bar dataKey="submissions" fill="#8b5cf6" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -155,14 +224,29 @@ const AdminDashboard = () => {
                 <Paper className="p-6 shadow-md rounded-lg">
                     <Typography variant="h5" className="font-bold mb-4">Quick Actions</Typography>
                     <div className="flex flex-row gap-2">
-                        <Button component={Link} to="/programs" variant="contained" fullWidth>Manage Programs</Button>
-                        <Button component={Link} to="/program/create" variant="outlined" fullWidth>Create New Program</Button>
+                        <Button
+                            component={Link}
+                            to="/programs"
+                            variant="contained"
+                            fullWidth
+                        >
+                            Manage Programs
+                        </Button>
+                        <Button
+                            component={Link}
+                            to="/program/create"
+                            variant="outlined"
+                            fullWidth
+                        >
+                            Create New Program
+                        </Button>
                     </div>
                 </Paper>
             </div>
         </div>
     );
 };
+
 
 
 // --- Main Dashboard Controller ---

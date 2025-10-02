@@ -54,6 +54,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+
     @PostMapping("/enroll/{programId}")
     public ResponseEntity<Enrollment> enroll(@RequestHeader("Authorization") String jwt,
                                              @PathVariable Long programId) throws Exception {

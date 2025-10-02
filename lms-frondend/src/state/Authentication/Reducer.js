@@ -1,7 +1,8 @@
 
-import { CLEAR_AUTH_ERROR, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType"
+import { CLEAR_AUTH_ERROR, GET_ALL_STUDENTS_FAILURE, GET_ALL_STUDENTS_REQUEST, GET_ALL_STUDENTS_SUCCESS, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType"
 const initialState = {
     user: null,
+    students: [],
     jwt: null,
     role: null,
     isLoading: false,
@@ -17,6 +18,7 @@ export const authReducer = (state = initialState, action) => {
         case REGISTER_REQUEST:
         case LOGIN_REQUEST:
         case GET_USER_REQUEST:
+        case GET_ALL_STUDENTS_REQUEST:
             return {
                 ...state,
                 isLoading: true,
@@ -41,9 +43,17 @@ export const authReducer = (state = initialState, action) => {
                 user: action.payload,       // ✅ gets filled
                 success: "Get User Success",
             }
+        case GET_ALL_STUDENTS_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                students: action.payload,
+                success: "Get All Student Success",
+            }
         case REGISTER_FAILURE:
         case LOGIN_FAILURE:
         case GET_USER_FAILURE:
+        case GET_ALL_STUDENTS_FAILURE:
             return {
                 ...state,
                 isLoading: false,

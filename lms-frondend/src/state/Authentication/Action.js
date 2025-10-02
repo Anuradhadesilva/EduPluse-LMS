@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CLEAR_AUTH_ERROR, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType";
+import { CLEAR_AUTH_ERROR, GET_ALL_STUDENTS_FAILURE, GET_ALL_STUDENTS_REQUEST, GET_ALL_STUDENTS_SUCCESS, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType";
 import { api, API_URL } from "../../config/api";
 import { closeLoginModal } from "../UI/uiSlice";
 
@@ -62,6 +62,28 @@ export const getUser = (jwt) => async (dispatch) => {
         console.log("error", error);
     }
 };
+
+export const getAllStudents = (jwt) => async (dispatch) => {
+    dispatch({ type: GET_ALL_STUDENTS_REQUEST });
+    try {
+        const { data } = await api.get(`/api/admin/students`, {
+            headers: {
+                Authorization: `Bearer ${jwt}`,
+            },
+        });
+        dispatch({ type: GET_ALL_STUDENTS_SUCCESS, payload: data });
+        console.log("All students", data);
+    } catch (error) {
+        dispatch({
+            type: GET_ALL_STUDENTS_FAILURE,
+            payload: error.response?.data?.message || error.message
+        });
+        console.log("error find all students", error);
+    }
+};
+
+
+
 export const logout = () => async (dispatch) => {
     dispatch({ type: LOGOUT });
     try {
