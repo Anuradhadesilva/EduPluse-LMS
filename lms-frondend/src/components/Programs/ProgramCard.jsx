@@ -10,6 +10,8 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
         return null; // Or return a placeholder/error component
     }
 
+    const role = localStorage.getItem("role")
+
     const { id, image, category, rating, title, lessons, duration, price } = program;
 
     const gradientColors = [
@@ -43,7 +45,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
 
                 <div className="flex justify-between items-center mt-auto">
                     <span className="text-xl font-bold text-gray-900">{price}</span>
-                    {isEnrolled ? (
+                    {isEnrolled || role === 'ROLE_ADMIN' ? (
                         <Button
                             component={Link}
                             to={`/programs/${id}`}
