@@ -24,6 +24,7 @@ export const Programs = () => {
     const [categoryFilter, setCategoryFilter] = useState("All");
     const [sortOrder, setSortOrder] = useState("newest");
     const [currentPage, setCurrentPage] = useState(1);
+    const [enrollingProgramId, setEnrollingProgramId] = useState(null);
     const programsPerPage = 9;
 
     useEffect(() => {
@@ -34,10 +35,19 @@ export const Programs = () => {
     }, [dispatch, jwt]);
 
     const handleEnroll = (programId) => {
-        if (!jwt) {
-            dispatch(openLoginModal());
-        } else {
-            dispatch(enrollProgram(jwt, programId));
+        setEnrollingProgramId(programId);
+        try {
+            if (!jwt) {
+                dispatch(openLoginModal());
+            } else {
+                dispatch(enrollProgram(jwt, programId));
+            }
+        } catch (error) {
+            console.error("Failed to enroll", error);
+            // You can add an error notification here
+        } finally {
+            setEnrollingProgramId("ssss");
+            console.log("ssss") // Stop loading for any card
         }
     };
 
@@ -132,6 +142,7 @@ export const Programs = () => {
                                         program={program}
                                         isEnrolled={enrolled?.some(e => e.program.id === program.id)}
                                         onEnroll={() => handleEnroll(program.id)}
+                                        isEnrolling={enrollingProgramId === program.id}
                                     />
                                 ))
                             ) : (

@@ -18,6 +18,9 @@ export const ProfessionalPlayerPage = ({ program, isLoading }) => {
         }
     }, [program]);
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, []);
     const handleSelectLesson = (lesson) => {
         setSelectedLesson(lesson);
         // Simulate marking a lesson as complete when it's selected
@@ -25,9 +28,7 @@ export const ProfessionalPlayerPage = ({ program, isLoading }) => {
     };
 
 
-    if (isLoading) {
-        return <PreLoader />;
-    }
+
     return (
         <div className=" text-white min-h-screen pt-20">
             <div className="flex flex-col lg:flex-row">

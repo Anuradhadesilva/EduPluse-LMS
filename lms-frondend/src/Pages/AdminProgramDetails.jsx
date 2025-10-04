@@ -639,13 +639,20 @@ export const AdminProgramDetails = () => {
                         setProgramData={setProgramData}
                     />
                 )}
-                {activeStep === 2 &&
-                    <QuizManager
-                        programData={programData}
-                        setProgramData={setProgramData}
-                        jwt={jwt}
-                        showLogin={showLogin}
-                    />}
+                {activeStep === 2 && (
+                    id ? (
+                        <QuizManager
+                            programData={programData}
+                            setProgramData={setProgramData}
+                            jwt={jwt}
+                            showLogin={showLogin}
+                        />
+                    ) : (
+                        <Typography color="textSecondary">
+                            Please save the program details first before adding quizzes.
+                        </Typography>
+                    )
+                )}
                 <div className="mt-8 flex justify-between">
                     <Button
                         disabled={activeStep === 0}

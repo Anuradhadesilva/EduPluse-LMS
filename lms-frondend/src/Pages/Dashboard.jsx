@@ -5,81 +5,118 @@ import { getAllPrograms, getEnrolledPrograms, getStudentsByProgram } from '../st
 import { getSubmissionsDetailsByProgramId, getUserSubmissions } from '../state/Quiz/Action';
 import { Paper, Typography, Button, CircularProgress, Card, CardContent, TableContainer, TableHead, TableRow, TableCell, TableBody, Chip, Collapse } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
-import { BookOpen, CheckCircle, Users, ArrowRight, Grid, Table, ChevronUp, ChevronDown } from 'lucide-react';
+import { BookOpen, CheckCircle, Users, ArrowRight, Grid, Table, ChevronUp, ChevronDown, TrendingUp, Clock } from 'lucide-react';
 import { PreLoader } from '../components/Loaders/Loader';
 import { getAllStudents } from '../state/Authentication/Action';
 import { at } from 'lodash';
 import AdminDashboard from './AdminDashboardHepler/AdminDashboard';
 
 // --- Student Dashboard Component ---
+const DashboardSkeleton = () => (
+    <div className="space-y-8 animate-pulse">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton variant="rectangular" width="100%" height={128} className="rounded-xl" />
+            <Skeleton variant="rectangular" width="100%" height={128} className="rounded-xl" />
+            <Skeleton variant="rectangular" width="100%" height={128} className="rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-3 space-y-4">
+                <Skeleton variant="text" width="40%" height={40} />
+                <Skeleton variant="rectangular" width="100%" height={80} className="rounded-lg" />
+                <Skeleton variant="rectangular" width="100%" height={80} className="rounded-lg" />
+            </div>
+            <div className="lg:col-span-2 space-y-4">
+                <Skeleton variant="text" width="40%" height={40} />
+                <Skeleton variant="rectangular" width="100%" height={180} className="rounded-lg" />
+            </div>
+        </div>
+    </div>
+);
+
+
 const StudentDashboard = () => {
-    const dispatch = useDispatch();
-    const jwt = localStorage.getItem("jwt")
     const { user } = useSelector(state => state.auth);
     const { enrolled, isLoading: programsLoading } = useSelector(state => state.program);
     const { submissions, isLoading: submissionsLoading } = useSelector(state => state.quiz);
 
-    useEffect(() => {
-        if (jwt && user?.id) {
-            dispatch(getEnrolledPrograms(jwt));
-            dispatch(getUserSubmissions(user.id));
-        }
-    }, [dispatch, jwt, user?.id]);
+    const { averageScore, recentEnrollments } = useMemo(() => {
+        const avg = submissions.length > 0
+            ? (submissions.reduce((acc, sub) => acc + (sub.score / sub.answers.length) * 100, 0) / submissions.length).toFixed(0)
+            : 0;
+        const recents = [...enrolled]
+            .sort((a, b) => new Date(b.enrolledAt) - new Date(a.enrolledAt))
+            .slice(0, 3);
+        return { averageScore: avg, recentEnrollments: recents };
+    }, [submissions, enrolled]);
 
-    const averageScore = submissions.length > 0
-        ? (submissions.reduce((acc, sub) => acc + (sub.score / sub.answers.length) * 100, 0) / submissions.length).toFixed(1)
-        : 0;
-
-    const latestEnrollment = enrolled.length > 0 ? enrolled[enrolled.length - 1] : null;
+    if (programsLoading || submissionsLoading) {
+        return <DashboardSkeleton />;
+    }
 
     return (
         <div className="space-y-8">
+
             {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="shadow-lg hover:shadow-xl transition-shadow">
-                    <CardContent className="flex flex-col items-start p-6 bg-gradient-to-br from-blue-500 to-blue-700 text-white">
-                        <BookOpen size={32} />
-                        <Typography variant="h3" className="font-bold mt-4">{enrolled.length}</Typography>
-                        <Typography>Enrolled Programs</Typography>
+                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
+                    <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                            <Typography className="font-bold text-gray-600">Enrolled Programs</Typography>
+                            <BookOpen className="text-blue-500" />
+                        </div>
+                        <Typography variant="h3" className="font-bold mt-2">{enrolled.length}</Typography>
                     </CardContent>
                 </Card>
-                <Card className="shadow-lg hover:shadow-xl transition-shadow">
-                    <CardContent className="flex flex-col items-start p-6 bg-gradient-to-br from-green-500 to-green-700 text-white">
-                        <CheckCircle size={32} />
-                        <Typography variant="h3" className="font-bold mt-4">{submissions.length}</Typography>
-                        <Typography>Quizzes Attempted</Typography>
+                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
+                    <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                            <Typography className="font-bold text-gray-600">Quizzes Attempted</Typography>
+                            <CheckCircle className="text-green-500" />
+                        </div>
+                        <Typography variant="h3" className="font-bold mt-2">{submissions.length}</Typography>
                     </CardContent>
                 </Card>
-                <Card className="shadow-lg hover:shadow-xl transition-shadow">
-                    <CardContent className="flex flex-col items-start p-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white">
-                        <Users size={32} />
-                        <Typography variant="h3" className="font-bold mt-4">{averageScore}%</Typography>
-                        <Typography>Average Score</Typography>
+                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
+                    <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                            <Typography className="font-bold text-gray-600">Average Score</Typography>
+                            <TrendingUp className="text-indigo-500" />
+                        </div>
+                        <Typography variant="h3" className="font-bold mt-2">{averageScore}%</Typography>
                     </CardContent>
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Continue Learning */}
-                <Paper className="p-6 shadow-md rounded-lg">
-                    <Typography variant="h5" className="font-bold mb-4">Continue Learning</Typography>
-                    {programsLoading ? <CircularProgress /> : latestEnrollment ? (
-                        <div className="p-4 border rounded-md bg-sky-50">
-                            <Typography variant="h6" className="font-semibold">{latestEnrollment.program.title}</Typography>
-                            <Typography variant="body2" className="text-gray-600 mb-4">{latestEnrollment.program.category}</Typography>
-                            <Button component={Link} to={`/programs/${latestEnrollment.program.id}`} variant="contained" endIcon={<ArrowRight />}>
-                                Go to Program
-                            </Button>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                {/* My Recent Programs */}
+                <Paper className="p-6 shadow-md rounded-lg lg:col-span-3">
+                    <Typography variant="h5" className="font-bold mb-4">My Recent Programs</Typography>
+                    {recentEnrollments.length > 0 ? (
+                        <div className="space-y-4">
+                            {recentEnrollments.map(({ program }) => (
+                                <Paper key={program.id} variant="outlined" className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                    <div>
+                                        <Typography variant="h6" className="font-semibold">{program.title}</Typography>
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                                            <Chip label={program.category} size="small" />
+                                            <span className="flex items-center gap-1"><Clock size={14} />{program.duration || 'Self-paced'}</span>
+                                        </div>
+                                    </div>
+                                    <Button component={Link} to={`/programs/${program.id}`} variant="contained" endIcon={<ArrowRight />}>
+                                        Continue
+                                    </Button>
+                                </Paper>
+                            ))}
                         </div>
                     ) : (
                         <Typography className="text-gray-500">You are not enrolled in any programs yet. <Link to="/programs" className="text-blue-600 hover:underline">Explore programs</Link>.</Typography>
                     )}
                 </Paper>
 
-                {/* Recent Activity */}
-                <Paper className="p-6 shadow-md rounded-lg">
+                {/* Recent Quiz Activity */}
+                <Paper className="p-6 shadow-md rounded-lg lg:col-span-2">
                     <Typography variant="h5" className="font-bold mb-4">Recent Quiz Activity</Typography>
-                    {submissionsLoading ? <CircularProgress /> : submissions.length > 0 ? (
+                    {submissions.length > 0 ? (
                         <ul className="space-y-3">
                             {submissions.slice(-3).reverse().map(sub => (
                                 <li key={sub.id} className="flex items-center justify-between p-3 border rounded-md">
@@ -478,6 +515,14 @@ export const Dashboard = () => {
     const role = localStorage.getItem("role")
     const { user } = useSelector((state) => state.auth);
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good morning";
+        if (hour < 18) return "Good afternoon";
+        return "Good evening";
+    };
+
+
     console.log(role)
     if (!user) {
         return (
@@ -494,7 +539,7 @@ export const Dashboard = () => {
         <div className="w-full min-h-screen bg-gray-100 pt-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                 <div className="mb-8">
-                    <Typography variant="h4" component="h1" className="font-bold">Welcome back, {user.fullName}!</Typography>
+                    <Typography variant="h4" className="font-bold">{getGreeting()}, {user.fullName.split(' ')[0]}!</Typography>
                     <Typography color="text.secondary">
                         {isAdmin ? "Here's an overview of your learning platform." : "Here's a summary of your learning progress."}
                     </Typography>

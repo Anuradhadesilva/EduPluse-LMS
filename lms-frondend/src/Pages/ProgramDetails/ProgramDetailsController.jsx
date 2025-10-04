@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CircularProgress, Box } from '@mui/material';
 // import { ProgramPlayer } from './aditional/ProgramPlayer';
 import { getEnrolledPrograms, getProgramById } from '../../state/Program/Action';
-import { ProgramStorefront } from './aditional/ProgramStorefront';
+import { ProgramStorefront } from './ProgramStorefront';
 import { ProfessionalPlayerPage } from './ProfessionalPlayerPage';
 import { PreLoader } from '../../components/Loaders/Loader';
 
@@ -39,5 +39,5 @@ export const ProgramDetailsController = () => {
     const isEnrolled = enrolled.some(e => e.program.id === program.id);
 
     // If the user is enrolled, show the course player. Otherwise, show the storefront.
-    return isEnrolled ? <ProfessionalPlayerPage program={program} /> : <ProgramStorefront program={program} />;
+    return isEnrolled ? <ProfessionalPlayerPage program={program} isLoading={isLoading} /> : <ProgramStorefront program={program} />;
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { Star, Book, Clock, Users, ArrowRight } from 'lucide-react';
 
 export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
@@ -12,7 +12,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
 
     const role = localStorage.getItem("role")
 
-    const { id, image, category, rating, title, lessons, duration, price } = program;
+    const { id, image, category, rating, title, lessons, duration, price, isEnrolling } = program;
 
     const gradientColors = [
         'from-purple-500 via-pink-500 to-indigo-500',
@@ -22,6 +22,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
     ];
     const randomGradient = gradientColors[id % gradientColors.length];
 
+    console.log(isEnrolling);
     return (
         <div className="rounded-xl shadow-lg overflow-hidden h-full flex flex-col group transform hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
 
@@ -60,12 +61,13 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
                             variant="contained"
                             size="small"
                             onClick={onEnroll}
+                            disabled={isEnrolling} // Disable button while enrolling
+                            sx={{ minWidth: '80px', minHeight: '31px' }} // Set min size to prevent layout shift
                         >
-                            Enroll
+                            {isEnrolling ? <CircularProgress size={20} color="inherit" /> : 'Enroll'}
                         </Button>
                     )}
                 </div>
-
             </div>
         </div>
     );

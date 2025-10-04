@@ -13,6 +13,7 @@ export const AdminPrograms = () => {
     const { auth } = useSelector(state => state);
     const { programs, isLoading } = useSelector(state => state.program);
     const jwt = localStorage.getItem("jwt");
+
     useEffect(() => {
         dispatch(getAllPrograms());
     }, [dispatch]);
@@ -36,7 +37,11 @@ export const AdminPrograms = () => {
             <PageTopBanner pageTitle="Admin Dashboard" />
             <div className="max-w-7xl mx-auto p-4 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
-                    <Typography variant="h4" component="h1" className="font-bold">Manage Programs</Typography>
+                    <Typography
+                        variant="h4"
+                        component="h1"
+                        className="font-bold">Manage Programs
+                    </Typography>
                     <Button
                         variant="contained"
                         startIcon={<PlusCircle />}
@@ -60,23 +65,39 @@ export const AdminPrograms = () => {
                             </TableHead>
                             <TableBody>
                                 {isLoading ? (
-                                    <TableRow><TableCell colSpan={5} align="center" sx={{ py: 5 }}><PreLoader /></TableCell></TableRow>
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center" sx={{ py: 5 }}><PreLoader />
+                                        </TableCell>
+                                    </TableRow>
                                 ) : (
                                     programs.map((program) => (
-                                        <TableRow key={program.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                            <TableCell className="font-semibold">{program.title}</TableCell>
-                                            <TableCell>{program.category}</TableCell>
+                                        <TableRow
+                                            key={program.id}
+                                            hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell
+                                                className="font-semibold">{program.title}
+                                            </TableCell>
+                                            <TableCell >{program.category}</TableCell>
                                             <TableCell>
-                                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${program.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                <span
+                                                    className={`px-2 py-1 text-xs font-semibold rounded-full 
+                                                    ${program.status === 'PUBLISHED' ?
+                                                            'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                                     {program.status}
                                                 </span>
                                             </TableCell>
                                             <TableCell>{program.language}</TableCell>
                                             <TableCell align="right">
-                                                <IconButton onClick={() => navigate(`/programs/${program.id}`)} color="primary" aria-label="edit">
+                                                <IconButton
+                                                    onClick={() => navigate(`/programs/${program.id}`)}
+                                                    color="primary"
+                                                    aria-label="edit">
                                                     <Edit size={20} />
                                                 </IconButton>
-                                                <IconButton onClick={() => handleDelete(program.id)} color="error" aria-label="delete">
+                                                <IconButton
+                                                    onClick={() => handleDelete(program.id)}
+                                                    color="error"
+                                                    aria-label="delete">
                                                     <Delete size={20} />
                                                 </IconButton>
                                             </TableCell>
