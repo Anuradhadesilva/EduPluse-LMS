@@ -11,7 +11,6 @@ import { getAllStudents } from '../state/Authentication/Action';
 import { at } from 'lodash';
 import AdminDashboard from './AdminDashboardHepler/AdminDashboard';
 
-// --- Student Dashboard Component ---
 const DashboardSkeleton = () => (
     <div className="space-y-8 animate-pulse">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -49,38 +48,43 @@ const StudentDashboard = () => {
         return { averageScore: avg, recentEnrollments: recents };
     }, [submissions, enrolled]);
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good morning";
+        if (hour < 18) return "Good afternoon";
+        return "Good evening";
+    };
+
     if (programsLoading || submissionsLoading) {
         return <DashboardSkeleton />;
     }
 
     return (
         <div className="space-y-8">
-
-            {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
-                    <CardContent className="p-6">
+                <Card className="shadow-lg transform hover:-translate-y-1 transition-transform duration-300 ">
+                    <CardContent className="p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-sm">
                         <div className="flex items-center justify-between">
-                            <Typography className="font-bold text-gray-600">Enrolled Programs</Typography>
-                            <BookOpen className="text-blue-500" />
+                            <Typography className="font-bold">Enrolled Programs</Typography>
+                            <BookOpen />
                         </div>
                         <Typography variant="h3" className="font-bold mt-2">{enrolled.length}</Typography>
                     </CardContent>
                 </Card>
-                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
-                    <CardContent className="p-6">
+                <Card className="shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                    <CardContent className="p-6 bg-gradient-to-br from-green-400 to-teal-500 text-white rounded-sm">
                         <div className="flex items-center justify-between">
-                            <Typography className="font-bold text-gray-600">Quizzes Attempted</Typography>
-                            <CheckCircle className="text-green-500" />
+                            <Typography className="font-bold">Quizzes Attempted</Typography>
+                            <CheckCircle />
                         </div>
                         <Typography variant="h3" className="font-bold mt-2">{submissions.length}</Typography>
                     </CardContent>
                 </Card>
-                <Card className="shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1">
-                    <CardContent className="p-6">
+                <Card className="shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                    <CardContent className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-sm">
                         <div className="flex items-center justify-between">
-                            <Typography className="font-bold text-gray-600">Average Score</Typography>
-                            <TrendingUp className="text-indigo-500" />
+                            <Typography className="font-bold">Average Score</Typography>
+                            <TrendingUp />
                         </div>
                         <Typography variant="h3" className="font-bold mt-2">{averageScore}%</Typography>
                     </CardContent>
@@ -94,7 +98,7 @@ const StudentDashboard = () => {
                     {recentEnrollments.length > 0 ? (
                         <div className="space-y-4">
                             {recentEnrollments.map(({ program }) => (
-                                <Paper key={program.id} variant="outlined" className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                <Paper key={program.id} variant="outlined" className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-lg">
                                     <div>
                                         <Typography variant="h6" className="font-semibold">{program.title}</Typography>
                                         <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">

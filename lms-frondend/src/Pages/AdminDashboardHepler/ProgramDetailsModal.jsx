@@ -26,10 +26,12 @@ const ProgramDetailsModal = ({ program, open, handleClose }) => {
         }
     }, [dispatch, program.id, open]);
 
+    console.log(programSubmissions);
+
     const handleTabChange = (event, newValue) => {
         setTab(newValue);
     };
-    console.log(programSubmissions);
+
 
     return (
         <>
@@ -50,11 +52,31 @@ const ProgramDetailsModal = ({ program, open, handleClose }) => {
                     )}
                     {/* Submissions Tab */}
                     {tab === 1 && (
-                        <List>{programSubmissions.map(sub => (
-                            <ListItem key={sub.id} secondaryAction={
-                                <Button edge="end" onClick={() => setSelectedSubmission(sub)}>View Answers</Button>
-                            }><ListItemText primary={`${sub.user.fullName} - ${sub.quiz.title}`} secondary={`Score: ${sub.score}`} /></ListItem>
-                        ))}</List>
+                        <>
+                            {programSubmissions.length > 1 ? (
+                                <List>
+                                    {programSubmissions.map((sub) => (
+                                        <ListItem
+                                            key={sub.id}
+                                            secondaryAction={
+                                                <Button edge="end" onClick={() => setSelectedSubmission(sub)}>
+                                                    View Answers
+                                                </Button>
+                                            }
+                                        >
+                                            <ListItemText
+                                                primary={`${sub.user.fullName} - ${sub.quiz.title}`}
+                                                secondary={`Score: ${sub.score}`}
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            ) : (
+                                <Typography variant="body1" align="center" color="textSecondary" sx={{ mt: 2 }}>
+                                    No submissions yet 📝
+                                </Typography>
+                            )}
+                        </>
                     )}
                 </DialogContent>
             </Dialog>

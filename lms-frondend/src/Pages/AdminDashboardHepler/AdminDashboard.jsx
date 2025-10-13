@@ -165,34 +165,42 @@ const ProgramDetailsModal = ({ program, open, handleClose }) => {
 
                     {/* Submissions Tab */}
                     {tab === 1 && (
-                        <List className="space-y-2 mt-3">
-                            {programSubmissions.map(sub => (
-                                <ListItem
-                                    key={sub.id}
-                                    className="rounded-lg shadow-sm border p-2 hover:bg-gray-50"
-                                    secondaryAction={
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => setSelectedSubmission(sub)}
+                        <>
+                            {programSubmissions.length > 0 ? (
+                                <List className="space-y-2 mt-3">
+                                    {programSubmissions.map(sub => (
+                                        <ListItem
+                                            key={sub.id}
+                                            className="rounded-lg shadow-sm border p-2 hover:bg-gray-50"
+                                            secondaryAction={
+                                                <Button
+                                                    variant="contained"
+                                                    size="small"
+                                                    onClick={() => setSelectedSubmission(sub)}
+                                                >
+                                                    View Answers
+                                                </Button>
+                                            }
                                         >
-                                            View Answers
-                                        </Button>
-                                    }
-                                >
-                                    <ListItemText
-                                        primary={`${sub.user.fullName} - ${sub.quiz.title}`}
-                                        secondary={
-                                            <Chip
-                                                label={`Score: ${sub.score}`}
-                                                color="success"
-                                                size="small"
+                                            <ListItemText
+                                                primary={`${sub.user.fullName} - ${sub.quiz.title}`}
+                                                secondary={
+                                                    <Chip
+                                                        label={`Score: ${sub.score}`}
+                                                        color="success"
+                                                        size="small"
+                                                    />
+                                                }
                                             />
-                                        }
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            ) : (
+                                <Typography variant="body1" align="center" color="textSecondary" sx={{ mt: 2 }}>
+                                    No submissions yet 📝
+                                </Typography>
+                            )}
+                        </>
                     )}
                 </DialogContent>
             </Dialog>

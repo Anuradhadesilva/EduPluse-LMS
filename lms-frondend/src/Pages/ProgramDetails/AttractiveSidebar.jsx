@@ -9,44 +9,78 @@ export const AttractiveSidebar = ({ program, selectedLesson, completedLessons, o
     const progress = allLessons.length > 0 ? (completedLessons.size / allLessons.length) * 100 : 0;
 
     return (
-        <Box className=" flex flex-col text-white pt-20">
-            <Box className="p-4 border-b border-gray-700">
-                <Typography variant="h6" className="font-bold">Course Content</Typography>
-                <Box sx={{ width: '100%', mt: 2 }}>
-                    <div className="flex justify-between items-center mb-1">
-                        <Typography variant="body2" className="text-gray-400">{completedLessons.size} / {allLessons.length} Complete</Typography>
-                        <Chip label={`${Math.round(progress)}%`} variant="filled" color="primary" size="small" />
-                    </div>
-                    <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3 }} />
-                </Box>
+        <Box className="flex flex-col h-full text-white">
+            {/* Progress Header */}
+            <Box className="p-5 border-b border-gray-700 bg-gray-900">
+                <Typography variant="h6" className="font-semibold mb-2">Course Progress</Typography>
+                <div className="flex justify-between items-center text-sm text-gray-400 mb-1">
+                    <span>{completedLessons.size} / {allLessons.length} Lessons</span>
+                    <Chip label={`${Math.round(progress)}%`} size="small" color="primary" />
+                </div>
+                <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3 }} />
             </Box>
 
-            <Box className="flex-grow overflow-y-auto">
+            {/* Scrollable Lesson List */}
+            <Box className="flex-grow overflow-y-auto p-2 bg-gray-900">
                 {(program.sections || []).map((section) => (
-                    <Accordion key={section.id} defaultExpanded sx={{ bgcolor: 'transparent', color: 'white', boxShadow: 'none', '&:before': { display: 'none' } }}>
-                        <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }} />} sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                            <Typography className="font-semibold">{section.title}</Typography>
+                    <Accordion
+                        key={section.id}
+                        disableGutters
+                        defaultExpanded
+                        sx={{
+                            bgcolor: 'transparent',
+                            color: 'white',
+                            boxShadow: 'none',
+                            '&:before': { display: 'none' },
+                        }}
+                    >
+                        <AccordionSummary
+                            expandIcon={<ExpandMore sx={{ color: 'white' }} />}
+                            sx={{
+                                borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+                                fontWeight: 600,
+                            }}
+                        >
+                            {section.title}
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0 }}>
                             <List dense>
                                 {(section.lessons || []).map((lesson) => {
                                     const isSelected = selectedLesson?.id === lesson.id;
                                     const isCompleted = completedLessons.has(lesson.id);
+
                                     const getIcon = () => {
-                                        const iconProps = { size: 20, className: "mr-2" };
-                                        if (lesson.lessonType === 'VIDEO') return <PlayCircleOutline sx={{ mr: 2 }} />;
-                                        if (lesson.lessonType === 'DOCUMENT') return <FileText {...iconProps} />;
-                                        if (lesson.lessonType === 'QUIZ') return <CheckSquare {...iconProps} />;
+                                        if (lesson.lessonType === 'VIDEO') return <PlayCircleOutline sx={{ mr: 1 }} />;
+                                        if (lesson.lessonType === 'DOCUMENT') return <FileText size={18} className="mr-1" />;
+                                        if (lesson.lessonType === 'QUIZ') return <CheckSquare size={18} className="mr-1" />;
                                     };
+
                                     return (
-                                        <ListItemButton key={lesson.id} selected={isSelected}
+                                        <ListItemButton
+                                            key={lesson.id}
+                                            selected={isSelected}
                                             onClick={() => onSelectLesson(lesson)}
-                                            sx={{ pl: 4, '&.Mui-selected': { bgcolor: 'rgba(255, 255, 255, 0.08)' } }}
+                                            sx={{
+                                                pl: 4,
+                                                py: 1,
+                                                borderRadius: 2,
+                                                mb: 0.5,
+                                                '&.Mui-selected': { bgcolor: 'rgba(255,255,255,0.1)' },
+                                            }}
                                         >
-                                            <ListItemIcon sx={{ minWidth: 40 }}>
-                                                {isCompleted ? <CheckCircle sx={{ color: 'success.main' }} /> : getIcon()}
+                                            <ListItemIcon sx={{ minWidth: 30 }}>
+                                                {isCompleted
+                                                    ? <CheckCircle sx={{ color: 'success.main' }} />
+                                                    : getIcon()}
                                             </ListItemIcon>
-                                            <ListItemText primary={lesson.title} />
+                                            <ListItemText
+                                                primary={lesson.title}
+                                                primaryTypographyProps={{
+                                                    fontSize: 14,
+                                                    fontWeight: isSelected ? 600 : 400,
+                                                    color: isCompleted ? 'lightgreen' : 'white',
+                                                }}
+                                            />
                                         </ListItemButton>
                                     );
                                 })}

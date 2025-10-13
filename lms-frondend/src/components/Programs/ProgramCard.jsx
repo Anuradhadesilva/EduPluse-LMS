@@ -29,7 +29,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
             {/* Gradient placeholder for image */}
             <div className={`h-40 w-full ${randomGradient} bg-gradient-to-br flex items-center justify-center`}>
                 <span className="text-white text-3xl font-bold uppercase">
-                    {title.slice(0, 4)}
+                    {title.split(" ").slice(0, 1)}
                 </span>
             </div>
 
