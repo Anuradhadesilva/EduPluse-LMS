@@ -18,6 +18,9 @@ export const ProfessionalPlayerPage = ({ program, isLoading }) => {
         }
     }, [program]);
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, []);
     const handleSelectLesson = (lesson) => {
         setSelectedLesson(lesson);
         // Simulate marking a lesson as complete when it's selected
@@ -25,20 +28,18 @@ export const ProfessionalPlayerPage = ({ program, isLoading }) => {
     };
 
 
-    if (isLoading) {
-        return <PreLoader />;
-    }
+
     return (
-        <div className=" text-white min-h-screen pt-20">
-            <div className="flex flex-col lg:flex-row">
-                {/* Main Content Area (Player and Overview) */}
-                <main className="flex-1 lg:pr-80 xl:pr-96">
+        <div className="text-white min-h-screen pt-20 ">
+            <div className="flex flex-col lg:flex-row gap-8 container mx-auto pb-20 ">
+                {/* Main Content Area */}
+                <main className="flex-1 rounded-2xl overflow-hidden">
                     <PlayerHeader program={program} />
                     <PlayerContentArea program={program} selectedLesson={selectedLesson} />
                 </main>
 
-                {/* Course Content Sidebar */}
-                <aside className="w-full lg:w-80 xl:w-96 lg:fixed lg:right-0 lg:top-0 min-h-screen mt-20 bg-gray-800 shadow-2xl">
+                {/* Sidebar (no fixed positioning) */}
+                <aside className="w-full lg:w-80 xl:w-96 bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                     <AttractiveSidebar
                         program={program}
                         selectedLesson={selectedLesson}
@@ -47,6 +48,11 @@ export const ProfessionalPlayerPage = ({ program, isLoading }) => {
                     />
                 </aside>
             </div>
+
+            {/* Footer */}
+            <footer className="bg-gray-800 text-gray-400 text-center py-6">
+                © {new Date().getFullYear()} Your Company — All rights reserved.
+            </footer>
         </div>
     );
 };

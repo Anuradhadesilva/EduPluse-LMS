@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { Star, Book, Clock, Users, ArrowRight } from 'lucide-react';
 
 export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
@@ -10,7 +10,9 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
         return null; // Or return a placeholder/error component
     }
 
-    const { id, image, category, rating, title, lessons, duration, price } = program;
+    const role = localStorage.getItem("role")
+
+    const { id, image, category, rating, title, lessons, duration, price, isEnrolling } = program;
 
     const gradientColors = [
         'from-purple-500 via-pink-500 to-indigo-500',
@@ -20,13 +22,14 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
     ];
     const randomGradient = gradientColors[id % gradientColors.length];
 
+    console.log(isEnrolling);
     return (
         <div className="rounded-xl shadow-lg overflow-hidden h-full flex flex-col group transform hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
 
             {/* Gradient placeholder for image */}
             <div className={`h-40 w-full ${randomGradient} bg-gradient-to-br flex items-center justify-center`}>
                 <span className="text-white text-3xl font-bold uppercase">
-                    {title.slice(0, 4)}
+                    {title.split(" ").slice(0, 1)}
                 </span>
             </div>
 
@@ -43,7 +46,7 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
 
                 <div className="flex justify-between items-center mt-auto">
                     <span className="text-xl font-bold text-gray-900">{price}</span>
-                    {isEnrolled ? (
+                    {isEnrolled || role === 'ROLE_ADMIN' ? (
                         <Button
                             component={Link}
                             to={`/programs/${id}`}
@@ -58,12 +61,13 @@ export const ProgramCard = ({ program, isEnrolled, onEnroll }) => {
                             variant="contained"
                             size="small"
                             onClick={onEnroll}
+                            disabled={isEnrolling} // Disable button while enrolling
+                            sx={{ minWidth: '80px', minHeight: '31px' }} // Set min size to prevent layout shift
                         >
-                            Enroll
+                            {isEnrolling ? <CircularProgress size={20} color="inherit" /> : 'Enroll'}
                         </Button>
                     )}
                 </div>
-
             </div>
         </div>
     );

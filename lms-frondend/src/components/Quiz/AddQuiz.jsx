@@ -98,35 +98,96 @@ export const AddQuiz = ({ programId, programTitle, onQuizCreated, onCancel }) =>
 
     return (
         <Paper className="p-6 mt-4 border-t" elevation={0}>
-            <Typography variant="h6" className="font-semibold mb-4">Create New Quiz</Typography>
+            <Typography
+                variant="h6"
+                className="font-semibold mb-4">Create New Quiz
+            </Typography>
             <div className="space-y-4">
-                <TextField label="Quiz Title" fullWidth value={quizTitle} onChange={e => setQuizTitle(e.target.value)} />
+                <TextField
+                    label="Quiz Title"
+                    fullWidth
+                    value={quizTitle}
+                    onChange={e => setQuizTitle(e.target.value)}
+                />
 
                 <Paper variant="outlined" className="p-4 space-y-3">
                     <Typography>Add a New Question</Typography>
-                    <TextField label="Question Text" size="small" fullWidth value={currentQ.question} onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })} />
+                    <TextField
+                        label="Question Text"
+                        size="small"
+                        fullWidth value={currentQ.question}
+                        onChange={e => setCurrentQ({ ...currentQ, question: e.target.value })} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 ">
-                        <TextField label="Option A" size="small" value={currentQ.optionA} onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })} />
-                        <TextField label="Option B" size="small" value={currentQ.optionB} onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })} />
-                        <TextField label="Option C" size="small" value={currentQ.optionC} onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })} />
-                        <TextField label="Option D" size="small" value={currentQ.optionD} onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })} />
+                        <TextField
+                            label="Option A"
+                            size="small"
+                            value={currentQ.optionA}
+                            onChange={e => setCurrentQ({ ...currentQ, optionA: e.target.value })}
+                        />
+                        <TextField
+                            label="Option B"
+                            size="small"
+                            value={currentQ.optionB}
+                            onChange={e => setCurrentQ({ ...currentQ, optionB: e.target.value })}
+                        />
+                        <TextField
+                            label="Option C"
+                            size="small"
+                            value={currentQ.optionC}
+                            onChange={e => setCurrentQ({ ...currentQ, optionC: e.target.value })}
+                        />
+                        <TextField
+                            label="Option D"
+                            size="small"
+                            value={currentQ.optionD}
+                            onChange={e => setCurrentQ({ ...currentQ, optionD: e.target.value })}
+                        />
                     </div>
-                    <TextField label="Correct Answer" size="small" fullWidth value={currentQ.correctAnswer} onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })} helperText="The text of the correct option (e.g., the text from Option A)." />
-                    <Button onClick={handleAddQuestion} variant="contained" startIcon={<Plus size={16} />}>Add Question to List</Button>
+                    <TextField
+                        label="Correct Answer"
+                        size="small"
+                        fullWidth value={currentQ.correctAnswer}
+                        onChange={e => setCurrentQ({ ...currentQ, correctAnswer: e.target.value })}
+                        helperText="The text of the correct option (e.g., the text from Option A)."
+                    />
+                    <Button
+                        onClick={handleAddQuestion}
+                        variant="contained"
+                        startIcon={<Plus size={16} />}>
+                        Add Question to List
+                    </Button>
                 </Paper>
 
                 {questions.length > 0 && (
                     <TableContainer component={Paper}>
                         <Table size="small">
-                            <TableHead><TableRow><TableCell>#</TableCell><TableCell>Question</TableCell><TableCell>Correct Answer</TableCell></TableRow></TableHead>
-                            <TableBody>{questions.map((q, i) => (<TableRow key={q.id}><TableCell>{i + 1}</TableCell><TableCell>{q.question}</TableCell><TableCell>{q.correctAnswer}</TableCell></TableRow>))}</TableBody>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>#</TableCell>
+                                    <TableCell>Question </TableCell>
+                                    <TableCell>Correct Answer</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>{questions.map((q, i) => (<TableRow key={q.id}><TableCell>{i + 1}</TableCell>
+                                <TableCell>{q.question}</TableCell>
+                                <TableCell>{q.correctAnswer}</TableCell>
+                            </TableRow>))}
+                            </TableBody>
                         </Table>
                     </TableContainer>
                 )}
 
                 <div className="flex gap-4">
-                    <Button variant="contained" color="primary" onClick={handleCreateQuiz} disabled={!quizTitle || questions.length === 0}>Save Quiz</Button>
-                    <Button variant="text" onClick={onCancel}>Cancel</Button>
+                    <Button variant="contained"
+                        color="primary"
+                        onClick={handleCreateQuiz}
+                        disabled={!quizTitle || questions.length === 0}>
+                        Save Quiz
+                    </Button>
+                    <Button
+                        variant="text"
+                        onClick={onCancel}>Cancel
+                    </Button>
                 </div>
             </div>
         </Paper>

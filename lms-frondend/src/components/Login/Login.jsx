@@ -62,10 +62,31 @@ export const Login = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {isRegistering && (
-                        <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                        <input
+                            type="text"
+                            name="fullName"
+                            placeholder="Full Name"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
                     )}
-                    <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
-                    <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email Address"
+                        value={formData.email} onChange={handleChange}
+                        required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
 
                     {auth.error && <p className="text-red-500 text-sm text-center mt-2">{auth.error}</p>}
 
@@ -76,7 +97,10 @@ export const Login = () => {
 
                 <p className="text-center text-sm text-gray-600 mt-6">
                     {isRegistering ? 'Already have an account?' : "Don't have an account?"}
-                    <button type="button" onClick={toggleFormType} className="ml-1 text-blue-600 font-semibold hover:underline">
+                    <button
+                        type="button"
+                        onClick={toggleFormType}
+                        className="ml-1 text-blue-600 font-semibold hover:underline">
                         {isRegistering ? 'Login' : 'Sign Up'}
                     </button>
                 </p>

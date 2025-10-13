@@ -20,6 +20,7 @@ import { ProgramDetailsController } from "./Pages/ProgramDetails/ProgramDetailsC
 import { ProgramBuilderPage } from "./Pages/AdminPrograms/ProgramBuilderPage"
 import { About } from "./Pages/About"
 import { Contact } from "./Pages/Contact"
+import ProgramPerformance from "./Pages/AdminDashboardHepler/ProgramPerformance"
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
           <Route path='/create-account' element={<SignUp />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
+          <Route path='/admin/programs' element={<ProgramPerformance />} />
         </Routes>
         {/* Footer Section */}
         <Footer />

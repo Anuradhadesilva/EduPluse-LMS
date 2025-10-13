@@ -1,130 +1,254 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+    Avatar,
+    Box,
+    Paper,
+    Typography,
+    CircularProgress,
+    Tabs,
+    Tab,
+    Button,
+    Tooltip,
+    Chip
+} from '@mui/material';
+import {
+    BookOpen,
+    CheckSquare,
+    User,
+    Settings,
+    ArrowRight,
+    Trash2
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-
-import { Avatar, Box, Paper, Typography, List, ListItem, ListItemText, Divider, CircularProgress, Tabs, Tab, Button } from '@mui/material';
-import { FiBookOpen, FiCheckSquare, FiUser, FiSettings } from 'react-icons/fi';
-import { getEnrolledPrograms } from '../../state/Program/Action';
+import { getEnrolledPrograms, unenrollProgram } from '../../state/Program/Action';
 import { getUserSubmissions } from '../../state/Quiz/Action';
+import { PreLoader } from '../Loaders/Loader';
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-    return (
-        <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
-            {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-        </div>
-    );
-}
+
+// Helper for animated tab panels
+const AnimatedTabPanel = ({ children, value, index }) => (
+    <AnimatePresence mode="wait">
+        {value === index && (
+            <motion.div
+                key={index}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+            >
+                <Box sx={{ p: { xs: 2, sm: 3 } }}>{children}</Box>
+            </motion.div>
+        )}
+    </AnimatePresence>
+);
 
 export const Profile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const jwt = localStorage.getItem("jwt");
     const { auth } = useSelector(store => store);
-    const { enrolled, isLoading: programsLoading } = useSelector(store => store.program);
+    const { enrolled, unenrollLoading } = useSelector(store => store.program);
     const { submissions, isLoading: submissionsLoading } = useSelector(store => store.quiz);
     const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
-        if (auth.user?.id) {
+        if (auth.user?.id && jwt) {
             dispatch(getEnrolledPrograms(jwt));
             dispatch(getUserSubmissions(auth.user.id));
         }
-    }, [dispatch, auth.user?.id, auth.jwt]);
+    }, [dispatch, auth.user?.id, jwt]);
 
-    const handleTabChange = (event, newValue) => {
-        setTabIndex(newValue);
-    };
 
     if (!auth.user) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <Typography variant="h6">Please log in to view your profile.</Typography>
+            <div className="bg-gray-100 min-h-screen pt-24 pb-12">
+                <div className="container mx-auto px-4 flex justify-center items-center">
+                    <PreLoader />
+                </div>
             </div>
         );
     }
 
     return (
         <div className="bg-gray-100 min-h-screen pt-24 pb-12">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <Paper className="max-w-5xl mx-auto shadow-lg rounded-xl overflow-hidden">
+            <div className="container mx-auto px-4">
+                <Paper className="max-w-5xl mx-auto shadow-xl rounded-2xl overflow-hidden">
                     {/* Profile Header */}
-                    <div className="p-8 bg-white border-b flex items-center space-x-6">
-                        <Avatar sx={{ width: 120, height: 120, bgcolor: 'primary.main', fontSize: '3.5rem' }}>
-                            {auth.user.fullName[0].toUpperCase()}
-                        </Avatar>
+                    <div
+                        className="p-6 md:p-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Avatar
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    bgcolor: 'white',
+                                    color: 'primary.main',
+                                    fontSize: '3rem',
+                                    border: '4px solid #fff'
+                                }}
+                            >
+                                {auth.user.fullName[0].toUpperCase()}
+                            </Avatar>
+                        </motion.div>
                         <div>
                             <Typography variant="h4" component="h1" className="font-bold">
                                 {auth.user.fullName}
                             </Typography>
-                            <Typography variant="body1" color="text.secondary">
+                            <Typography variant="body1" className="text-indigo-200">
                                 {auth.user.email}
                             </Typography>
-                            <Button variant="outlined" size="small" sx={{ mt: 2 }}>Edit Profile</Button>
                         </div>
                     </div>
 
                     {/* Tabs Navigation */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tabs value={tabIndex} onChange={handleTabChange} aria-label="profile tabs" centered>
-                            <Tab icon={<FiUser />} iconPosition="start" label="Overview" />
-                            <Tab icon={<FiBookOpen />} iconPosition="start" label="Enrolled Programs" />
-                            <Tab icon={<FiCheckSquare />} iconPosition="start" label="Quiz History" />
-                            <Tab icon={<FiSettings />} iconPosition="start" label="Settings" />
+                        <Tabs
+                            value={tabIndex}
+                            onChange={(e, val) => setTabIndex(val)}
+                            aria-label="profile tabs"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                        >
+                            <Tab icon={<User />} iconPosition="start" label="Overview" />
+                            <Tab
+                                icon={<BookOpen />}
+                                iconPosition="start"
+                                label={`My Programs (${enrolled.length})`}
+                            />
+                            <Tab
+                                icon={<CheckSquare />}
+                                iconPosition="start"
+                                label={`Quiz History (${submissions.length})`}
+                            />
+                            <Tab icon={<Settings />} iconPosition="start" label="Settings" />
                         </Tabs>
                     </Box>
 
                     {/* Tab Content */}
-                    <TabPanel value={tabIndex} index={0}>
-                        <Typography variant="h5" component="h2" className="font-semibold mb-4">Profile Overview</Typography>
-                        <Typography>Welcome to your dashboard, {auth.user.fullName}. Here you can track your learning progress, manage your account settings, and view your achievements.</Typography>
-                    </TabPanel>
+                    <AnimatedTabPanel value={tabIndex} index={0}>
+                        <Typography variant="h5" className="font-semibold mb-4">
+                            Welcome Back, {auth.user.fullName.split(' ')[0]}!
+                        </Typography>
+                        <Typography>
+                            This is your personal dashboard. Track your learning, review past
+                            quizzes, and manage your account all in one place.
+                        </Typography>
+                    </AnimatedTabPanel>
 
-                    <TabPanel value={tabIndex} index={1}>
-                        {programsLoading ? (
-                            <div className="text-center"><CircularProgress /></div>
-                        ) : enrolled.length > 0 ? (
-                            <List>
-                                {enrolled.map((enrollment) => (
-                                    <ListItem key={enrollment.id} component={Link} to={`/programs/${enrollment.program.id}`} button className="hover:bg-gray-50 rounded-lg">
-                                        <ListItemText primary={enrollment.program.title} secondary={`Enrolled on: ${new Date(enrollment.enrolledAt).toLocaleDateString()}`} />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        ) : (
-                            <Typography color="text.secondary">You are not enrolled in any programs yet.</Typography>
-                        )}
-                    </TabPanel>
+                    <AnimatedTabPanel value={tabIndex} index={1}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {enrolled.length > 0 ? enrolled.map(({ program, enrolledAt }) => (
+                                <AnimatePresence key={program.id}>
+                                    <motion.div
+                                        layout
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ scale: 0.8, opacity: 0 }}
+                                        transition={{ duration: 0.4 }}
+                                    >
+                                        <Paper
+                                            variant="outlined"
+                                            className="p-4 rounded-lg flex flex-col h-full"
+                                        >
+                                            <Typography variant="h6" className="font-bold flex-grow">
+                                                {program.title}
+                                            </Typography>
+                                            <Chip
+                                                label={program.category}
+                                                size="small"
+                                                className="my-2 self-start"
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                                className="mb-4"
+                                            >
+                                                Enrolled: {new Date(enrolledAt).toLocaleDateString()}
+                                            </Typography>
+                                            <div className="flex items-center justify-between mt-auto">
+                                                <Button
+                                                    component={Link}
+                                                    to={`/programs/${program.id}`}
+                                                    endIcon={<ArrowRight size={16} />}
+                                                >
+                                                    View Program
+                                                </Button>
+                                                <Tooltip title="Unenroll from this program">
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        size="small"
+                                                        onClick={() => dispatch(unenrollProgram(jwt, program.id))}
+                                                        disabled={unenrollLoading === program.id}
+                                                    >
+                                                        {unenrollLoading === program.id ? (
+                                                            <CircularProgress size={20} />
+                                                        ) : (
+                                                            <Trash2 size={16} />
+                                                        )}
+                                                    </Button>
+                                                </Tooltip>
+                                            </div>
+                                        </Paper>
+                                    </motion.div>
+                                </AnimatePresence>
+                            )) : (
+                                <Typography color="text.secondary" className="md:col-span-2">
+                                    You are not enrolled in any programs yet.
+                                </Typography>
+                            )}
+                        </div>
+                    </AnimatedTabPanel>
 
-                    <TabPanel value={tabIndex} index={2}>
+                    <AnimatedTabPanel value={tabIndex} index={2}>
                         {submissionsLoading ? (
                             <div className="text-center"><CircularProgress /></div>
                         ) : submissions.length > 0 ? (
-                            <List>
-                                {submissions.map((submission) => (
-                                    <ListItem key={submission.id} secondaryAction={
-                                        <Button variant="outlined" size="small" onClick={() => navigate(`/quiz/${submission.quiz.id}`)}>
+                            <div className="space-y-4">
+                                {submissions.map((sub) => (
+                                    <Paper
+                                        key={sub.id}
+                                        variant="outlined"
+                                        className="p-4 flex justify-between items-center rounded-lg"
+                                    >
+                                        <div>
+                                            <Typography className="font-semibold">
+                                                {sub.quiz.title}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Score: {sub.score} / {sub.answers.length}
+                                            </Typography>
+                                        </div>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => navigate(`/quiz/${sub.quiz.id}`)}
+                                        >
                                             Review
                                         </Button>
-                                    }>
-                                        <ListItemText primary={submission.quiz.title} secondary={`Score: ${submission.score} / ${submission.answers.length}`} />
-                                    </ListItem>
+                                    </Paper>
                                 ))}
-                            </List>
+                            </div>
                         ) : (
-                            <Typography color="text.secondary">You have not submitted any quizzes yet.</Typography>
+                            <Typography color="text.secondary">
+                                You have not submitted any quizzes yet.
+                            </Typography>
                         )}
-                    </TabPanel>
+                    </AnimatedTabPanel>
 
-                    <TabPanel value={tabIndex} index={3}>
-                        <Typography variant="h5" component="h2" className="font-semibold mb-4">Account Settings</Typography>
-                        <div className="space-y-4">
-                            <Button variant="contained">Change Password</Button>
-                            <Typography color="text.secondary">More account settings will be available here in the future.</Typography>
-                        </div>
-                    </TabPanel>
-
+                    <AnimatedTabPanel value={tabIndex} index={3}>
+                        <Typography variant="h5" className="font-semibold mb-4">
+                            Account Settings
+                        </Typography>
+                        <Button variant="contained">Change Password</Button>
+                    </AnimatedTabPanel>
                 </Paper>
             </div>
         </div>

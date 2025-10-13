@@ -23,7 +23,7 @@ export const Contact = () => {
                     <MapPin className="w-10 h-10 text-red-500 mx-auto mb-3" />
                     <h3 className="font-bold text-lg text-gray-800">Our Address</h3>
                     <p className="text-gray-600 text-sm mt-2">
-                        123 Learning St, Knowledge City, World 45678
+                        61/2 Revatha Road, Balapitiya, Srilanka
                     </p>
                 </div>
 
@@ -36,7 +36,7 @@ export const Contact = () => {
                 <div className="bg-white shadow-lg rounded-xl p-6 text-center hover:shadow-2xl transition">
                     <Phone className="w-10 h-10 text-green-600 mx-auto mb-3" />
                     <h3 className="font-bold text-lg text-gray-800">Call Us</h3>
-                    <p className="text-gray-600 text-sm mt-2">+1 (555) 123-4567</p>
+                    <p className="text-gray-600 text-sm mt-2">+94 77-123-4567</p>
                 </div>
             </div>
 

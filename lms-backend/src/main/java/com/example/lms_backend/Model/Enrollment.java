@@ -21,6 +21,7 @@ public class Enrollment {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "program_id")
     private Program program;
 
    private LocalDateTime enrolledAt = LocalDateTime.now();
