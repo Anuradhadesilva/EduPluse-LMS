@@ -22,7 +22,11 @@ public class ProgramServiceImpl implements ProgramService {
     // Add repositories for new content types
     private final VideoRepository videoRepository;
     private final DocumentRepository documentRepository;
+    private final QuizRepository quizRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final QuestionRepository questionRepository;
+    private final SubmittedAnswerRepository submittedAnswerRepository;
+    private final QuizSubmissionRepository quizSubmissionRepository;
 //    private final QuizRepository quizRepository;
 
     @Override
@@ -72,19 +76,33 @@ public class ProgramServiceImpl implements ProgramService {
     public void deleteProgram(Long id) {
         Program program = getProgramById(id);
 
+        List<Quiz> quizzes = quizRepository.findByProgramId(id);
+
+        for (Quiz quiz : quizzes) {
+            // 2️⃣ For each quiz, delete all submitted answers for its questions
+            List<Question> questions = questionRepository.findByQuizId(quiz.getId());
+            for (Question question : questions) {
+                submittedAnswerRepository.deleteByQuestion(question);
+            }
+
+            // 3️⃣ Delete questions and quiz submissions if necessary
+            questionRepository.deleteAll(questions);
+            quizSubmissionRepository.deleteAll(quizSubmissionRepository.findByQuizId(quiz.getId()));
+
+            // 4️⃣ Finally delete the quiz itself
+            quizRepository.delete(quiz);
+        }
         // ✅ FIX: Manually detach all associated content before deleting the program.
         // This satisfies the foreign key constraints.
-
+        enrollmentRepository.deleteByProgramId(id);
         // 1. Find all Videos, Documents, and Quizzes linked to this program.
         // This includes content linked directly OR indirectly through lessons.
         List<Video> videosToDetach = videoRepository.findByProgramId(id);
         List<Document> documentsToDetach = documentRepository.findByProgramId(id);
-//        List<Quiz> quizzesToDetach = quizRepository.findByProgramId(id);
 
         // 2. Set their program reference to null to break the foreign key link.
         videosToDetach.forEach(video -> video.setProgram(null));
         documentsToDetach.forEach(doc -> doc.setProgram(null));
-//        quizzesToDetach.forEach(quiz -> quiz.setProgram(null));
 
         // 3. Save the changes to the content tables.
         videoRepository.saveAll(videosToDetach);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { getQuizById, updateQuiz } from '../../state/Quiz/Action';
+import { addQuestion, getQuizById, updateQuiz } from '../../state/Quiz/Action';
 import { getProgramById } from '../../state/Program/Action';
 import {
     Button,
@@ -89,6 +89,30 @@ export const UpdateQuiz = ({ programId, onQuizUpdated, quizId, onCancel }) => {
             ...prev,
             questions: prev.questions.filter((_, i) => i !== index),
         }));
+        setShowAddQuestion(false);
+    };
+
+    const handleSaveQuestion = async () => {
+        if (editingIndex === null) return; // nothing to save
+
+        for (let q of formData.questions) {
+            const { question, optionA, optionB, optionC, optionD, correctAnswer } = q;
+            if (!question || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
+                alert("❌ Please fill in all fields for every question before saving.");
+                return;
+            }
+        }
+
+        try {
+            await dispatch(updateQuiz(jwt, quizId, formData));
+            alert("✅ Question saved successfully!");
+            setEditingIndex(null); // ready to edit next question
+        } catch (err) {
+            console.error("❌ Failed to save question:", err);
+            alert("Failed to save question. See console for details.");
+        }
+        setEditingIndex(null);
+        setShowAddQuestion(false);
     };
 
     const handleSave = async () => {
@@ -161,7 +185,7 @@ export const UpdateQuiz = ({ programId, onQuizUpdated, quizId, onCancel }) => {
                                 />
                                 <div className="flex justify-end gap-2">
                                     <Button
-                                        onClick={() => setEditingIndex(null)}
+                                        onClick={() => setEditingIndex(null) && showAddQuestion(false)}
                                         variant="outlined"
                                         color="error"
                                         startIcon={<X size={16} />}
@@ -169,7 +193,7 @@ export const UpdateQuiz = ({ programId, onQuizUpdated, quizId, onCancel }) => {
                                         Cancel
                                     </Button>
                                     <Button
-                                        onClick={handleSave}
+                                        onClick={() => handleSaveQuestion()}
                                         variant="contained"
                                         color="primary"
                                         startIcon={<Save size={16} />}

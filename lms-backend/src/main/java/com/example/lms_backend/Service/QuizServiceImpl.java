@@ -3,10 +3,8 @@ package com.example.lms_backend.Service;
 import com.example.lms_backend.Model.Program;
 import com.example.lms_backend.Model.Question;
 import com.example.lms_backend.Model.Quiz;
-import com.example.lms_backend.Repo.ProgramRepository;
-import com.example.lms_backend.Repo.QuestionRepository;
-import com.example.lms_backend.Repo.QuizRepository;
-import com.example.lms_backend.Repo.UserRepository;
+import com.example.lms_backend.Model.QuizSubmission;
+import com.example.lms_backend.Repo.*;
 import com.example.lms_backend.dto.QuizRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,7 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final QuestionRepository questionRepository;
     private final ProgramRepository programRepository;
-
+    private final QuizSubmissionRepository quizSubmissionRepository;
 
 
     @Override
@@ -35,9 +33,23 @@ public class QuizServiceImpl implements QuizService {
         return questionRepository.save(question);
     }
 
-    @Override
+    @Transactional
     public void deleteQuiz(Long quizId) {
-        Quiz quiz = getQuizById(quizId);
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        // 1️⃣ Delete all quiz submissions linked to this quiz
+        List<QuizSubmission> submissions = quizSubmissionRepository.findByQuizId(quizId);
+        if (!submissions.isEmpty()) {
+            quizSubmissionRepository.deleteAll(submissions);
+        }
+
+        // 2️⃣ Delete questions (if cascade doesn’t handle them)
+        if (!quiz.getQuestions().isEmpty()) {
+            quiz.getQuestions().clear();
+        }
+
+        // 3️⃣ Now safely delete the quiz
         quizRepository.delete(quiz);
     }
 
