@@ -21,6 +21,7 @@ export const Navbar = () => {
 
     const { auth } = useSelector(store => store);
 
+    const jwt = localStorage.getItem("jwt");
     console.log(auth.user);
     const handleOpenLoginModal = () => dispatch(openLoginModal());
     const handleLogout = () => {
@@ -43,6 +44,8 @@ export const Navbar = () => {
         navigate(path);
         handleCloseUserMenu();
     };
+
+    if (auth.isLoading) return null;
 
     return (
         <>
