@@ -6,13 +6,13 @@ on:
 
 jobs:
   # -----------------------
-  # 1. BUILD & PUSH DOCKER IMAGE
+  # 1. BUILD & PUSH TO DOCKER HUB
   # -----------------------
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: lms-backend
+        working-directory: lms-backend   # 👈 important: build inside this folder
 
     steps:
       - name: Checkout code
@@ -48,6 +48,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: [ self-hosted, ec2, eduplus ]
+
     steps:
       - name: Check Docker Installation
         run: |
@@ -80,4 +81,3 @@ jobs:
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} \
             ${{ secrets.DOCKER_USERNAME }}/eduplus-lms:latest
-
