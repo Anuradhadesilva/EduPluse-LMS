@@ -47,7 +47,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: [ self-hosted, ec2, eduplus ]
+    runs-on: self-hosted
 
     steps:
       - name: Check Docker Installation
