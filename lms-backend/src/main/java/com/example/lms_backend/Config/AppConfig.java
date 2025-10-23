@@ -26,6 +26,7 @@ public class AppConfig {
                         management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/auth/**").permitAll()
 //                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -46,7 +47,7 @@ public class AppConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://eduPlus.vercel.app"
+                "http://eduplus-lms.s3-website-us-east-1.amazonaws.com"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
