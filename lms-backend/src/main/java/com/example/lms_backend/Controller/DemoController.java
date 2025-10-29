@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
     @GetMapping("/")
     public String helloWorld() {
-        return "Backend API is running";
+        return "Backend API is running on";
     }
 
 }
