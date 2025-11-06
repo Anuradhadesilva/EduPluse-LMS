@@ -12,15 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private  UserRepository userRepository;
-    @Autowired
-    private JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final JwtProvider jwtProvider;
+
 
     @Override
     public User createUser(User user) {

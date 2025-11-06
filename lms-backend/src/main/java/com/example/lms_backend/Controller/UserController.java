@@ -20,10 +20,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 
 public class UserController {
-    @Autowired
     private final UserService userService;
-
-    @Autowired
     private final EnrollmentService enrollmentService;
 
     public UserController(UserService userService, EnrollmentService enrollmentService) {
